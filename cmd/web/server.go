@@ -7,5 +7,5 @@ func (app *application) start() {
 
 	e.GET("/", app.home)
 
-	e.Logger.Fatal(e.Start(":3000"))
+	e.Logger.Fatal(e.Start(app.addr))
 }

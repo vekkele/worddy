@@ -1,9 +1,17 @@
 package main
 
-type application struct{}
+import "flag"
+
+type application struct {
+	addr string
+}
 
 func main() {
-	app := application{}
+	addr := flag.String("addr", ":4000", "HTTP network address")
+
+	app := application{
+		addr: *addr,
+	}
 
 	app.start()
 }
