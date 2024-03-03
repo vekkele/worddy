@@ -1,0 +1,9 @@
+package pages
+
+import "github.com/vekkele/worddy/ui/view/shared"
+
+templ Home(appName string) {
+	@shared.Page("Home") {
+		<h1 class="text-2xl text-blue-400">Hello { appName }</h1>
+	}
+}
