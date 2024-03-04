@@ -6,5 +6,5 @@ import (
 )
 
 func (app *application) home(c echo.Context) error {
-	return render(c, pages.Index("Worddy"))
+	return render(c, pages.Home("Worddy"))
 }
