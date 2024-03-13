@@ -7,7 +7,7 @@ type application struct {
 }
 
 func main() {
-	addr := flag.String("addr", ":4000", "HTTP network address")
+	addr := flag.String("addr", ":8080", "HTTP network address")
 
 	app := application{
 		addr: *addr,
