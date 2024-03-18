@@ -1,0 +1,30 @@
+package partials
+
+type TextInputProps struct {
+	Name        string
+	Type        string
+	Placeholder string
+	Label       string
+	Required    bool
+}
+
+func inputType(inputType string) string {
+	if inputType == "" {
+		return "text"
+	}
+
+	return inputType
+}
+
+templ TextInput(p TextInputProps) {
+	<label class="flex flex-col w-full">
+		<span class="mb-2 font-bold">{ p.Label }</span>
+		<input
+			class="p-2 mb-6 border rounded-md border-slate-300 text-neutral-900"
+			type={ inputType(p.Type) }
+			placeholder={ p.Placeholder }
+			name={ p.Name }
+			required?={ p.Required }
+		/>
+	</label>
+}

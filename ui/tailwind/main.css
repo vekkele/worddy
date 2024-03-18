@@ -2,12 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  body {
-    @apply min-h-screen;
-  }
-}
-
 @layer components {
   .btn {
     @apply px-5 py-2 text-white transition-colors bg-blue-600 rounded-lg;

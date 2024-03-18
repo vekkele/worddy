@@ -1,0 +1,63 @@
+package pages
+
+import "github.com/vekkele/worddy/ui/view/layouts"
+import "github.com/vekkele/worddy/ui/view/partials"
+
+templ authForm() {
+	<main class="flex justify-center px-10 py-16">
+		<form class="flex flex-col flex-1 max-w-sm">
+			{ children... }
+		</form>
+	</main>
+}
+
+templ Signup() {
+	@layouts.Page("Sign Up") {
+		@authForm() {
+			@partials.TextInput(partials.TextInputProps{
+				Name:        "email",
+				Label:       "Email",
+				Type:        "email",
+				Placeholder: "Enter your email",
+				Required:    true,
+			})
+			@partials.TextInput(partials.TextInputProps{
+				Name:        "password",
+				Label:       "Password",
+				Type:        "password",
+				Placeholder: "Create a password",
+				Required:    true,
+			})
+			@partials.TextInput(partials.TextInputProps{
+				Name:        "password-confirm",
+				Label:       "Confirm password",
+				Type:        "password",
+				Placeholder: "Confirm your password",
+				Required:    true,
+			})
+			<button class="btn">Submit</button>
+		}
+	}
+}
+
+templ Login() {
+	@layouts.Page("Login") {
+		@authForm() {
+			@partials.TextInput(partials.TextInputProps{
+				Name:        "email",
+				Label:       "Email",
+				Type:        "email",
+				Placeholder: "Enter your email",
+				Required:    true,
+			})
+			@partials.TextInput(partials.TextInputProps{
+				Name:        "password",
+				Label:       "Password",
+				Type:        "password",
+				Placeholder: "Enter your password",
+				Required:    true,
+			})
+			<button class="btn">Submit</button>
+		}
+	}
+}

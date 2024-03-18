@@ -1,4 +1,4 @@
-package shared
+package layouts
 
 templ Page(title string) {
 	<!DOCTYPE html>
@@ -9,7 +9,7 @@ templ Page(title string) {
 			<title>{ title } | Worddy</title>
 			<link rel="stylesheet" href="/static/css/app.css"/>
 		</head>
-		<body class="dark">
+		<body class="min-h-screen dark dark:bg-slate-900 dark:text-white">
 			{ children... }
 		</body>
 	</html>
