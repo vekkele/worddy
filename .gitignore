@@ -4,3 +4,4 @@ tailwindcss
 ui/static/css/app.css
 
 tmp
+.env

@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: worddy_db
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=${WORDDY_DB_USER}
+      - POSTGRES_PASSWORD=${WORDDY_DB_PASSWORD}
+      - POSTGRES_DB=${WORDDY_DB_NAME}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  pgdata:
