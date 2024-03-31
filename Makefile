@@ -17,9 +17,19 @@ init: deps install
 install: tailwind_install
 	go install github.com/cosmtrek/air@latest
 	go install github.com/a-h/templ/cmd/templ@latest
+	go install github.com/pressly/goose/v3/cmd/goose@latest
 
 db_init: 
 	docker compose --env-file .env --file ./db/dev/docker-compose.yml up -d
 
 db_rm:
 	docker compose --file ./db/dev/docker-compose.yml down -v
+
+db_migration:
+	goose -dir db/migrations -s create "$(name)" sql
+
+db_status:
+	goose -dir db/migrations postgres $(WORDDY_DB_DSN) status
+
+db_up:
+	goose -dir db/migrations postgres $(WORDDY_DB_DSN) up
