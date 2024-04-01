@@ -1,6 +1,10 @@
 package main
 
-import "flag"
+import (
+	"flag"
+	"log"
+	"net/http"
+)
 
 type application struct {
 	addr string
@@ -13,5 +17,6 @@ func main() {
 		addr: *addr,
 	}
 
-	app.start()
+	err := http.ListenAndServe(*addr, app.routes())
+	log.Fatal(err)
 }

@@ -1,10 +1,15 @@
 package main
 
 import (
+	"log/slog"
+	"net/http"
+
 	"github.com/a-h/templ"
-	"github.com/labstack/echo/v4"
 )
 
-func render(c echo.Context, component templ.Component) error {
-	return component.Render(c.Request().Context(), c.Response())
+func render(w http.ResponseWriter, r *http.Request, component templ.Component) {
+	if err := component.Render(r.Context(), w); err != nil {
+		slog.Error(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
 }
