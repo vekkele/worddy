@@ -1,22 +1,28 @@
 package main
 
 import (
-	"flag"
 	"log"
 	"net/http"
+
+	"github.com/vekkele/worddy/internal/config"
+	"github.com/vekkele/worddy/internal/postgres"
 )
 
-type application struct {
-	addr string
-}
+type application struct{}
 
 func main() {
-	addr := flag.String("addr", ":8080", "HTTP network address")
-
-	app := application{
-		addr: *addr,
+	config, err := config.New()
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	err := http.ListenAndServe(*addr, app.routes())
+	_, err = postgres.OpenDB(config.DB.DSN)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	app := application{}
+
+	err = http.ListenAndServe(":"+config.Port, app.routes())
 	log.Fatal(err)
 }
