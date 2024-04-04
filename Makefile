@@ -18,6 +18,7 @@ install: tailwind_install
 	go install github.com/cosmtrek/air@latest
 	go install github.com/a-h/templ/cmd/templ@latest
 	go install github.com/pressly/goose/v3/cmd/goose@latest
+	go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 
 db_init: 
 	docker compose --env-file .env --file ./db/dev/docker-compose.yml up -d

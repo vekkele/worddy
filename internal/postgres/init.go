@@ -3,7 +3,7 @@ package postgres
 import (
 	"database/sql"
 
-	_ "github.com/lib/pq"
+	_ "github.com/jackc/pgx/v5"
 )
 
 func OpenDB(dsn string) (*sql.DB, error) {
