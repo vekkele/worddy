@@ -6,6 +6,7 @@ require (
 	github.com/a-h/templ v0.2.598
 	github.com/alexedwards/argon2id v1.0.0
 	github.com/go-chi/chi/v5 v5.0.12
+	github.com/go-playground/form/v4 v4.2.1
 	github.com/jackc/pgx/v5 v5.5.5
 	github.com/joho/godotenv v1.5.1
 )

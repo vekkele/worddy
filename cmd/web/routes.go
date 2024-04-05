@@ -17,6 +17,7 @@ func (app *application) routes() http.Handler {
 
 	r.Get("/", app.home)
 	r.Get("/user/signup", app.signup)
+	r.Post("/user/signup", app.signupPost)
 	r.Get("/user/login", app.login)
 
 	return r

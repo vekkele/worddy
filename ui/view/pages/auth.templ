@@ -3,17 +3,23 @@ package pages
 import "github.com/vekkele/worddy/ui/view/layouts"
 import "github.com/vekkele/worddy/ui/view/partials"
 
-templ authForm() {
+templ authForm(action string) {
 	<main class="flex justify-center px-10 py-16">
-		<form class="flex flex-col flex-1 max-w-sm">
+		<form class="flex flex-col flex-1 max-w-sm" action={ templ.URL(action) } method="POST">
 			{ children... }
 		</form>
 	</main>
 }
 
+type SignupForm struct {
+	Email           string `form:"email"`
+	Password        string `form:"password"`
+	PasswordConfirm string `form:"password-confirm"`
+}
+
 templ Signup() {
 	@layouts.Page("Sign Up") {
-		@authForm() {
+		@authForm("/user/signup") {
 			@partials.TextInput(partials.TextInputProps{
 				Name:        "email",
 				Label:       "Email",
@@ -42,7 +48,7 @@ templ Signup() {
 
 templ Login() {
 	@layouts.Page("Login") {
-		@authForm() {
+		@authForm("/user/login") {
 			@partials.TextInput(partials.TextInputProps{
 				Name:        "email",
 				Label:       "Email",
