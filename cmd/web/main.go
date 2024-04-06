@@ -1,8 +1,9 @@
 package main
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
+	"os"
 
 	"github.com/go-playground/form/v4"
 	"github.com/vekkele/worddy/internal/config"
@@ -13,17 +14,22 @@ import (
 type application struct {
 	userModel   models.UserModel
 	formDecoder *form.Decoder
+	logger      *slog.Logger
 }
 
 func main() {
+	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{}))
+
 	config, err := config.New()
 	if err != nil {
-		log.Fatal(err)
+		logger.Error(err.Error())
+		os.Exit(1)
 	}
 
 	pool, err := postgres.OpenDB(config.DB.DSN)
 	if err != nil {
-		log.Fatal(err)
+		logger.Error(err.Error())
+		os.Exit(1)
 	}
 
 	userModel := models.NewUserModel(pool)
@@ -31,8 +37,10 @@ func main() {
 	app := application{
 		userModel:   userModel,
 		formDecoder: form.NewDecoder(),
+		logger:      logger,
 	}
 
 	err = http.ListenAndServe(":"+config.Port, app.routes())
-	log.Fatal(err)
+	logger.Error(err.Error())
+	os.Exit(1)
 }

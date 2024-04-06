@@ -2,17 +2,16 @@ package main
 
 import (
 	"errors"
-	"log/slog"
 	"net/http"
+	"runtime/debug"
 
 	"github.com/a-h/templ"
 	"github.com/go-playground/form/v4"
 )
 
-func render(w http.ResponseWriter, r *http.Request, component templ.Component) {
+func (app *application) render(w http.ResponseWriter, r *http.Request, component templ.Component) {
 	if err := component.Render(r.Context(), w); err != nil {
-		slog.Error(err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		app.serverError(w, r, err)
 	}
 }
 
@@ -40,6 +39,12 @@ func (app *application) clientError(w http.ResponseWriter, status int) {
 	http.Error(w, http.StatusText(status), status)
 }
 
-func (app *application) serverError(w http.ResponseWriter) {
+func (app *application) serverError(w http.ResponseWriter, r *http.Request, err error) {
+	method := r.Method
+	uri := r.URL.RequestURI()
+	trace := string(debug.Stack())
+
+	app.logger.Error(err.Error(), "method", method, "uri", uri, "trace", trace)
+
 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 }
