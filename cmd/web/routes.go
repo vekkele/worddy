@@ -10,7 +10,7 @@ import (
 func (app *application) routes() http.Handler {
 	r := chi.NewRouter()
 
-	r.Use(app.logRequest, secureHeaders)
+	r.Use(app.recoverPanic, app.logRequest, secureHeaders)
 
 	fs := http.FileServer(http.FS(ui.Files))
 	r.Handle("/static/*", fs)
