@@ -16,8 +16,6 @@ func (app *application) routes() http.Handler {
 	r.Handle("/static/*", fs)
 
 	r.Get("/", app.home)
-
-	r.Get("/", app.home)
 	r.Get("/user/signup", app.signup)
 	r.Post("/user/signup", app.signupPost)
 	r.Get("/user/login", app.login)
