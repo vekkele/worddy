@@ -1,9 +1,11 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
+	"github.com/vekkele/worddy/internal/models"
 	"github.com/vekkele/worddy/ui/view/pages"
 )
 
@@ -29,8 +31,14 @@ func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//TODO: Validate form
+
 	user, err := app.users.Insert(r.Context(), form.Email, form.Password)
 	if err != nil {
+		if errors.Is(err, models.ErrDuplicateEmail) {
+			app.clientError(w, http.StatusBadRequest)
+			return
+		}
+
 		app.serverError(w, r, err)
 		return
 	}

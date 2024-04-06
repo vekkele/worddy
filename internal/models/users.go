@@ -6,6 +6,7 @@ import (
 
 	"github.com/alexedwards/argon2id"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/vekkele/worddy/internal/models/db"
 )
@@ -33,7 +34,13 @@ func (m *UserModel) Insert(ctx context.Context, email, password string) (db.User
 		},
 	)
 	if err != nil {
-		//TODO: Return specific error if email is already taken
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			if pgErr.Code == "23505" && pgErr.ConstraintName == "users_email_key" {
+				return db.User{}, ErrDuplicateEmail
+			}
+		}
+
 		return db.User{}, err
 	}
 
