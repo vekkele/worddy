@@ -12,7 +12,7 @@ import (
 )
 
 type application struct {
-	userModel   models.UserModel
+	users       models.UserModel
 	formDecoder *form.Decoder
 	logger      *slog.Logger
 }
@@ -32,10 +32,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	userModel := models.NewUserModel(pool)
-
 	app := application{
-		userModel:   userModel,
+		users:       models.NewUserModel(pool),
 		formDecoder: form.NewDecoder(),
 		logger:      logger,
 	}

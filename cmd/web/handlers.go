@@ -29,7 +29,7 @@ func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//TODO: Validate form
-	user, err := app.userModel.Insert(r.Context(), form.Email, form.Password)
+	user, err := app.users.Insert(r.Context(), form.Email, form.Password)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
