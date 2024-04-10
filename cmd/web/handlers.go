@@ -43,7 +43,8 @@ func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
 
 	if err := app.users.Insert(r.Context(), form.Email, form.Password); err != nil {
 		if errors.Is(err, models.ErrDuplicateEmail) {
-			app.clientError(w, http.StatusBadRequest)
+			form.AddFieldError("email", "Email address is already in use")
+			app.render(w, r, pages.Signup(form))
 			return
 		}
 
