@@ -2,44 +2,47 @@ package pages
 
 import "github.com/vekkele/worddy/ui/view/layouts"
 import "github.com/vekkele/worddy/ui/view/partials"
+import "github.com/vekkele/worddy/internal/validator"
 
 templ authForm(action string) {
 	<main class="flex justify-center px-10 py-16">
-		<form class="flex flex-col flex-1 max-w-sm" action={ templ.URL(action) } method="POST">
+		<form class="flex flex-col flex-1 max-w-sm gap-6" action={ templ.URL(action) } method="POST">
 			{ children... }
 		</form>
 	</main>
 }
 
 type SignupForm struct {
-	Email           string `form:"email"`
-	Password        string `form:"password"`
-	PasswordConfirm string `form:"password-confirm"`
+	Email               string `form:"email"`
+	Password            string `form:"password"`
+	PasswordConfirm     string `form:"password-confirm"`
+	validator.Validator `form:"-"`
 }
 
-templ Signup() {
+templ Signup(form SignupForm) {
 	@layouts.Page("Sign Up") {
 		@authForm("/user/signup") {
 			@partials.TextInput(partials.TextInputProps{
 				Name:        "email",
+				Value:       form.Email,
 				Label:       "Email",
 				Type:        "email",
 				Placeholder: "Enter your email",
-				Required:    true,
+				Error:       form.FieldErrors["email"],
 			})
 			@partials.TextInput(partials.TextInputProps{
 				Name:        "password",
 				Label:       "Password",
 				Type:        "password",
 				Placeholder: "Create a password",
-				Required:    true,
+				Error:       form.FieldErrors["password"],
 			})
 			@partials.TextInput(partials.TextInputProps{
 				Name:        "password-confirm",
 				Label:       "Confirm password",
 				Type:        "password",
 				Placeholder: "Confirm your password",
-				Required:    true,
+				Error:       form.FieldErrors["password-confirm"],
 			})
 			<button class="btn">Submit</button>
 		}
