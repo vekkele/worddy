@@ -21,13 +21,13 @@ func NewUserModel(pool *pgxpool.Pool) UserModel {
 	return UserModel{db: *queries, pool: pool}
 }
 
-func (m *UserModel) Insert(ctx context.Context, email, password string) (db.User, error) {
+func (m *UserModel) Insert(ctx context.Context, email, password string) error {
 	hash, err := argon2id.CreateHash(password, argon2id.DefaultParams)
 	if err != nil {
-		return db.User{}, err
+		return err
 	}
 
-	user, err := m.db.CreateUser(
+	err = m.db.CreateUser(
 		ctx, db.CreateUserParams{
 			Email:        email,
 			PasswordHash: []byte(hash),
@@ -37,14 +37,14 @@ func (m *UserModel) Insert(ctx context.Context, email, password string) (db.User
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			if pgErr.Code == "23505" && pgErr.ConstraintName == "users_email_key" {
-				return db.User{}, ErrDuplicateEmail
+				return ErrDuplicateEmail
 			}
 		}
 
-		return db.User{}, err
+		return err
 	}
 
-	return user, nil
+	return nil
 }
 
 func (m *UserModel) Authenticate(ctx context.Context, email, password string) (int64, error) {

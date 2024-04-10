@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/vekkele/worddy/internal/models"
@@ -42,8 +41,7 @@ func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := app.users.Insert(r.Context(), form.Email, form.Password)
-	if err != nil {
+	if err := app.users.Insert(r.Context(), form.Email, form.Password); err != nil {
 		if errors.Is(err, models.ErrDuplicateEmail) {
 			app.clientError(w, http.StatusBadRequest)
 			return
@@ -53,7 +51,5 @@ func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user.PasswordHash = nil
-
-	fmt.Fprintf(w, "User created: %#v\n", user)
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
