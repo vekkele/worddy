@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/vekkele/worddy/internal/models"
@@ -18,7 +19,7 @@ func (app *application) signup(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) login(w http.ResponseWriter, r *http.Request) {
-	app.render(w, r, pages.Login())
+	app.render(w, r, pages.Login(pages.LoginForm{}))
 }
 
 func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
@@ -53,4 +54,32 @@ func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+}
+
+func (app *application) loginPost(w http.ResponseWriter, r *http.Request) {
+	var form pages.LoginForm
+
+	err := app.decodePostForm(r, &form)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	form.CheckField(validator.NotBlank(form.Email), "email", "This field cannot be blank")
+	form.CheckField(validator.Matches(form.Email, validator.EmailRX), "email", "Invalid email format")
+	form.CheckField(validator.NotBlank(form.Password), "password", "This field cannot be blank")
+
+	userID, err := app.users.Authenticate(r.Context(), form.Email, form.Password)
+	if err != nil {
+		if errors.Is(err, models.ErrInvalidCredentials) {
+			form.AddNonFieldError("Invalid email or password")
+			app.render(w, r, pages.Login(form))
+			return
+		}
+
+		app.serverError(w, r, err)
+		return
+	}
+
+	fmt.Printf("Success, userId: %d\n", userID)
 }

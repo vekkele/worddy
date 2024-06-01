@@ -49,15 +49,25 @@ templ Signup(form SignupForm) {
 	}
 }
 
-templ Login() {
+type LoginForm struct {
+	Email               string `form:"email"`
+	Password            string `form:"password"`
+	validator.Validator `form:"-"`
+}
+
+templ Login(form LoginForm) {
 	@layouts.Page("Login") {
 		@authForm("/user/login") {
+			for _, err := range form.NonFieldErrors {
+				@partials.FormError(err)
+			}
 			@partials.TextInput(partials.TextInputProps{
 				Name:        "email",
 				Label:       "Email",
 				Type:        "email",
 				Placeholder: "Enter your email",
 				Required:    true,
+				Value:       form.Email,
 			})
 			@partials.TextInput(partials.TextInputProps{
 				Name:        "password",
