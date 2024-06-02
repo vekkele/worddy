@@ -48,18 +48,17 @@ func (m *UserModel) Insert(ctx context.Context, email, password string) error {
 }
 
 func (m *UserModel) Authenticate(ctx context.Context, email, password string) (int64, error) {
-	row, getErr := m.db.GetByEmail(ctx, email)
+	row, err := m.db.GetByEmail(ctx, email)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return 0, ErrInvalidCredentials
+		}
+		return 0, err
+	}
 
 	match, err := argon2id.ComparePasswordAndHash(password, string(row.PasswordHash))
 	if err != nil {
 		return 0, err
-	}
-
-	if getErr != nil {
-		if errors.Is(getErr, pgx.ErrNoRows) {
-			return 0, ErrInvalidCredentials
-		}
-		return 0, getErr
 	}
 
 	if !match {
