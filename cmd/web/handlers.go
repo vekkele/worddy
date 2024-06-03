@@ -93,3 +93,14 @@ func (app *application) loginPost(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
+
+func (app *application) logoutPost(w http.ResponseWriter, r *http.Request) {
+	if err := app.sessionManager.RenewToken(r.Context()); err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	app.sessionManager.Remove(r.Context(), "authenticatedUserID")
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
