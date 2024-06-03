@@ -1,9 +1,11 @@
 package pages
 
-import "github.com/vekkele/worddy/ui/view/layouts"
+import "net/http"
 import "strconv"
+import "github.com/justinas/nosurf"
+import "github.com/vekkele/worddy/ui/view/layouts"
 
-templ Home(appName string, userID int64) {
+templ Home(r *http.Request, appName string, userID int64) {
 	@layouts.Page("Home") {
 		<main class="flex flex-col items-center gap-6 ">
 			<h1 class="pt-20 text-2xl dark:text-white">
@@ -20,6 +22,7 @@ templ Home(appName string, userID int64) {
 					<a href="/user/login" class="btn">Login</a>
 				} else {
 					<form action="/user/logout" method="POST">
+						<input type="hidden" name="csrf_token" value={ nosurf.Token(r) }/>
 						<button class="btn">Logout</button>
 					</form>
 				}

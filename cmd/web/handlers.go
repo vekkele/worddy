@@ -12,15 +12,15 @@ import (
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	userID := app.authenticatedUserID(r)
 
-	app.render(w, r, pages.Home("Home", userID))
+	app.render(w, r, pages.Home(r, "Home", userID))
 }
 
 func (app *application) signup(w http.ResponseWriter, r *http.Request) {
-	app.render(w, r, pages.Signup(pages.SignupForm{}))
+	app.render(w, r, pages.Signup(r, pages.SignupForm{}))
 }
 
 func (app *application) login(w http.ResponseWriter, r *http.Request) {
-	app.render(w, r, pages.Login(pages.LoginForm{}))
+	app.render(w, r, pages.Login(r, pages.LoginForm{}))
 }
 
 func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
@@ -39,14 +39,14 @@ func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
 	form.CheckField(form.Password == form.PasswordConfirm, "password-confirm", "Passwords do not match")
 
 	if !form.Valid() {
-		app.render(w, r, pages.Signup(form))
+		app.render(w, r, pages.Signup(r, form))
 		return
 	}
 
 	if err := app.users.Insert(r.Context(), form.Email, form.Password); err != nil {
 		if errors.Is(err, models.ErrDuplicateEmail) {
 			form.AddFieldError("email", "Email address is already in use")
-			app.render(w, r, pages.Signup(form))
+			app.render(w, r, pages.Signup(r, form))
 			return
 		}
 
@@ -74,7 +74,7 @@ func (app *application) loginPost(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, models.ErrInvalidCredentials) {
 			form.AddNonFieldError("Invalid email or password")
-			app.render(w, r, pages.Login(form))
+			app.render(w, r, pages.Login(r, form))
 			return
 		}
 
