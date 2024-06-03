@@ -48,3 +48,7 @@ func (app *application) serverError(w http.ResponseWriter, r *http.Request, err 
 
 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 }
+
+func (app *application) authenticatedUserID(r *http.Request) int64 {
+	return app.sessionManager.GetInt64(r.Context(), "authenticatedUserID")
+}

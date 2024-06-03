@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/vekkele/worddy/internal/models"
@@ -11,7 +10,9 @@ import (
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	app.render(w, r, pages.Home("Home"))
+	userID := app.authenticatedUserID(r)
+
+	app.render(w, r, pages.Home("Home", userID))
 }
 
 func (app *application) signup(w http.ResponseWriter, r *http.Request) {
@@ -81,5 +82,14 @@ func (app *application) loginPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("Success, userId: %d\n", userID)
+	_ = userID
+
+	if err := app.sessionManager.RenewToken(r.Context()); err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	app.sessionManager.Put(r.Context(), "authenticatedUserID", userID)
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

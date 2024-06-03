@@ -4,7 +4,10 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"time"
 
+	"github.com/alexedwards/scs/pgxstore"
+	"github.com/alexedwards/scs/v2"
 	"github.com/go-playground/form/v4"
 	"github.com/vekkele/worddy/internal/config"
 	"github.com/vekkele/worddy/internal/models"
@@ -12,9 +15,10 @@ import (
 )
 
 type application struct {
-	users       models.UserModel
-	formDecoder *form.Decoder
-	logger      *slog.Logger
+	users          models.UserModel
+	formDecoder    *form.Decoder
+	logger         *slog.Logger
+	sessionManager *scs.SessionManager
 }
 
 func main() {
@@ -32,10 +36,16 @@ func main() {
 		os.Exit(1)
 	}
 
+	sessionManager := scs.New()
+	sessionManager.Store = pgxstore.New(pool)
+	sessionManager.Lifetime = 12 * time.Hour
+	sessionManager.Cookie.Secure = true
+
 	app := application{
-		users:       models.NewUserModel(pool),
-		formDecoder: form.NewDecoder(),
-		logger:      logger,
+		users:          models.NewUserModel(pool),
+		formDecoder:    form.NewDecoder(),
+		logger:         logger,
+		sessionManager: sessionManager,
 	}
 
 	err = http.ListenAndServe(":"+config.Port, app.routes())

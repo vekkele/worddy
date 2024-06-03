@@ -1,12 +1,18 @@
 package pages
 
 import "github.com/vekkele/worddy/ui/view/layouts"
+import "strconv"
 
-templ Home(appName string) {
+templ Home(appName string, userID int64) {
 	@layouts.Page("Home") {
 		<main class="flex flex-col items-center gap-6 ">
 			<h1 class="pt-20 text-2xl dark:text-white">
 				Worddy is an app that helps you learn new vocabulary
+				if userID != 0 {
+					<span class="text-green-600">
+						User with id { strconv.FormatInt(userID, 10) } is logged in
+					</span>
+				}
 			</h1>
 			<section class="flex gap-4">
 				<a href="/user/signup" class="btn">Sign Up</a>

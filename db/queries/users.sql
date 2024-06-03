@@ -6,3 +6,6 @@ VALUES
 
 -- name: GetByEmail :one
 SELECT id, password_hash FROM users WHERE email = $1;
+
+-- name: Exists :one
+SELECT EXISTS(SELECT true FROM users WHERE id = $1);

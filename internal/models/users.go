@@ -67,3 +67,7 @@ func (m *UserModel) Authenticate(ctx context.Context, email, password string) (i
 
 	return row.ID, nil
 }
+
+func (m *UserModel) Exists(ctx context.Context, id int64) (bool, error) {
+	return m.db.Exists(ctx, id)
+}

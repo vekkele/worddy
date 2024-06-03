@@ -8,5 +8,15 @@ CREATE TABLE IF NOT EXISTS users (
   created_at timestamp(0) with time zone NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE sessions (
+	token TEXT PRIMARY KEY,
+	data BYTEA NOT NULL,
+	expiry TIMESTAMPTZ NOT NULL
+);
+
+CREATE INDEX sessions_expiry_idx ON sessions (expiry);
+
 -- +goose Down
 DROP TABLE IF EXISTS users;
+
+DROP TABLE IF EXISTS sessions;

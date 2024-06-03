@@ -26,6 +26,17 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 	return err
 }
 
+const exists = `-- name: Exists :one
+SELECT EXISTS(SELECT true FROM users WHERE id = $1)
+`
+
+func (q *Queries) Exists(ctx context.Context, id int64) (bool, error) {
+	row := q.db.QueryRow(ctx, exists, id)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
 const getByEmail = `-- name: GetByEmail :one
 SELECT id, password_hash FROM users WHERE email = $1
 `

@@ -15,11 +15,15 @@ func (app *application) routes() http.Handler {
 	fs := http.FileServer(http.FS(ui.Files))
 	r.Handle("/static/*", fs)
 
-	r.Get("/", app.home)
-	r.Get("/user/signup", app.signup)
-	r.Post("/user/signup", app.signupPost)
-	r.Get("/user/login", app.login)
-	r.Post("/user/login", app.loginPost)
+	r.Group(func(r chi.Router) {
+		r.Use(app.sessionManager.LoadAndSave, app.authenticate)
+
+		r.Get("/", app.home)
+		r.Get("/user/signup", app.signup)
+		r.Post("/user/signup", app.signupPost)
+		r.Get("/user/login", app.login)
+		r.Post("/user/login", app.loginPost)
+	})
 
 	return r
 }
