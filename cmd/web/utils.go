@@ -52,3 +52,12 @@ func (app *application) serverError(w http.ResponseWriter, r *http.Request, err 
 func (app *application) authenticatedUserID(r *http.Request) int64 {
 	return app.sessionManager.GetInt64(r.Context(), "authenticatedUserID")
 }
+
+func (app *application) isAuthenticated(r *http.Request) bool {
+	isAuthenticated, ok := r.Context().Value(isAuthenticatedContextKey).(bool)
+	if !ok {
+		return false
+	}
+
+	return isAuthenticated
+}
