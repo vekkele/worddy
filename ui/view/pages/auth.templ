@@ -48,6 +48,7 @@ templ Signup(r *http.Request, form SignupForm) {
 				Error:       form.FieldErrors["password-confirm"],
 			})
 			<button class="btn">Submit</button>
+			<a href="/user/login" class="self-center link">Login</a>
 		}
 	}
 }
@@ -80,6 +81,7 @@ templ Login(r *http.Request, form LoginForm) {
 				Required:    true,
 			})
 			<button class="btn">Submit</button>
+			<a href="/user/signup" class="self-center link">Sign Up</a>
 		}
 	}
 }
