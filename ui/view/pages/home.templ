@@ -1,31 +1,17 @@
 package pages
 
 import "net/http"
-import "strconv"
-import "github.com/justinas/nosurf"
 import "github.com/vekkele/worddy/ui/view/layouts"
 
-templ Home(r *http.Request, appName string, userID int64) {
+templ Home(r *http.Request, appName string) {
 	@layouts.Page("Home") {
 		<main class="flex flex-col items-center gap-6 ">
 			<h1 class="pt-20 text-2xl dark:text-white">
 				Worddy is an app that helps you learn new vocabulary
 			</h1>
-			if userID != 0 {
-				<h4 class="text-lg text-green-600">
-					User with id { strconv.FormatInt(userID, 10) } is logged in
-				</h4>
-			}
 			<section class="flex gap-4">
-				if userID == 0 {
-					<a href="/user/signup" class="btn">Sign Up</a>
-					<a href="/user/login" class="btn">Login</a>
-				} else {
-					<form action="/user/logout" method="POST">
-						<input type="hidden" name="csrf_token" value={ nosurf.Token(r) }/>
-						<button class="btn">Logout</button>
-					</form>
-				}
+				<a href="/user/signup" class="btn">Sign Up</a>
+				<a href="/user/login" class="btn">Login</a>
 			</section>
 		</main>
 	}

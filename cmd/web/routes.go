@@ -28,6 +28,7 @@ func (app *application) routes() http.Handler {
 			r.Use(app.requireAuthentication)
 
 			r.Post("/user/logout", app.logoutPost)
+			r.Get("/dashboard", app.dashboard)
 		})
 	})
 

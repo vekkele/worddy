@@ -10,9 +10,11 @@ import (
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	userID := app.authenticatedUserID(r)
+	if app.isAuthenticated(r) {
+		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+	}
 
-	app.render(w, r, pages.Home(r, "Home", userID))
+	app.render(w, r, pages.Home(r, "Home"))
 }
 
 func (app *application) signup(w http.ResponseWriter, r *http.Request) {
@@ -91,7 +93,7 @@ func (app *application) loginPost(w http.ResponseWriter, r *http.Request) {
 
 	app.sessionManager.Put(r.Context(), "authenticatedUserID", userID)
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
 
 func (app *application) logoutPost(w http.ResponseWriter, r *http.Request) {
@@ -103,4 +105,8 @@ func (app *application) logoutPost(w http.ResponseWriter, r *http.Request) {
 	app.sessionManager.Remove(r.Context(), "authenticatedUserID")
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (app *application) dashboard(w http.ResponseWriter, r *http.Request) {
+	app.render(w, r, pages.Dashboard(r))
 }
