@@ -12,13 +12,13 @@ import (
 )
 
 type UserModel struct {
-	db   db.Queries
+	db   *db.Queries
 	pool *pgxpool.Pool
 }
 
 func NewUserModel(pool *pgxpool.Pool) UserModel {
 	queries := db.New(pool)
-	return UserModel{db: *queries, pool: pool}
+	return UserModel{db: queries, pool: pool}
 }
 
 func (m *UserModel) Insert(ctx context.Context, email, password string) error {
@@ -48,7 +48,7 @@ func (m *UserModel) Insert(ctx context.Context, email, password string) error {
 }
 
 func (m *UserModel) Authenticate(ctx context.Context, email, password string) (int64, error) {
-	row, err := m.db.GetByEmail(ctx, email)
+	row, err := m.db.GetUserByEmail(ctx, email)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return 0, ErrInvalidCredentials
@@ -69,5 +69,5 @@ func (m *UserModel) Authenticate(ctx context.Context, email, password string) (i
 }
 
 func (m *UserModel) Exists(ctx context.Context, id int64) (bool, error) {
-	return m.db.Exists(ctx, id)
+	return m.db.UserExists(ctx, id)
 }

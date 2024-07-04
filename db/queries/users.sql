@@ -4,8 +4,8 @@ INSERT INTO
 VALUES
   ($1, $2);
 
--- name: GetByEmail :one
+-- name: GetUserByEmail :one
 SELECT id, password_hash FROM users WHERE email = $1;
 
--- name: Exists :one
+-- name: UserExists :one
 SELECT EXISTS(SELECT true FROM users WHERE id = $1);

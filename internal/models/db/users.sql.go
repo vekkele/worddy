@@ -26,29 +26,29 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 	return err
 }
 
-const exists = `-- name: Exists :one
-SELECT EXISTS(SELECT true FROM users WHERE id = $1)
-`
-
-func (q *Queries) Exists(ctx context.Context, id int64) (bool, error) {
-	row := q.db.QueryRow(ctx, exists, id)
-	var exists bool
-	err := row.Scan(&exists)
-	return exists, err
-}
-
-const getByEmail = `-- name: GetByEmail :one
+const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT id, password_hash FROM users WHERE email = $1
 `
 
-type GetByEmailRow struct {
+type GetUserByEmailRow struct {
 	ID           int64
 	PasswordHash []byte
 }
 
-func (q *Queries) GetByEmail(ctx context.Context, email string) (GetByEmailRow, error) {
-	row := q.db.QueryRow(ctx, getByEmail, email)
-	var i GetByEmailRow
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error) {
+	row := q.db.QueryRow(ctx, getUserByEmail, email)
+	var i GetUserByEmailRow
 	err := row.Scan(&i.ID, &i.PasswordHash)
 	return i, err
+}
+
+const userExists = `-- name: UserExists :one
+SELECT EXISTS(SELECT true FROM users WHERE id = $1)
+`
+
+func (q *Queries) UserExists(ctx context.Context, id int64) (bool, error) {
+	row := q.db.QueryRow(ctx, userExists, id)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
 }
