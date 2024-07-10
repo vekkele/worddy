@@ -14,9 +14,30 @@ type Session struct {
 	Expiry pgtype.Timestamptz
 }
 
+type Stage struct {
+	ID          int64
+	Level       int32
+	HoursToNext int32
+	CreatedAt   pgtype.Timestamptz
+}
+
+type Translation struct {
+	ID          int64
+	Translation string
+	WordID      int64
+}
+
 type User struct {
 	ID           int64
 	Email        string
 	PasswordHash []byte
 	CreatedAt    pgtype.Timestamptz
+}
+
+type Word struct {
+	ID         int64
+	Word       string
+	NextReview pgtype.Timestamptz
+	StageID    int64
+	UserID     int64
 }

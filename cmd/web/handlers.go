@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/vekkele/worddy/internal/models"
 	"github.com/vekkele/worddy/internal/validator"
@@ -109,4 +110,54 @@ func (app *application) logoutPost(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) dashboard(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, pages.Dashboard(r))
+}
+
+func (app *application) wordAdd(w http.ResponseWriter, r *http.Request) {
+	app.render(w, r, pages.WordAdd(r, pages.WordAddForm{}))
+}
+
+func (app *application) wordAddPost(w http.ResponseWriter, r *http.Request) {
+	var form pages.WordAddForm
+
+	err := app.decodePostForm(r, &form)
+	if err != nil {
+		app.clientError(w, http.StatusUnprocessableEntity)
+		return
+	}
+
+	translations := splitTranslations(form.Translations)
+
+	form.CheckField(validator.NotBlank(form.Word), "word", "This field cannot be blank")
+	form.CheckField(len(translations) > 0, "translations", "At least one non-empty translation must be provided")
+
+	if !form.Valid() {
+		app.render(w, r, pages.WordAdd(r, form))
+		return
+	}
+
+	userID := app.authenticatedUserID(r)
+	if userID == 0 {
+		app.clientError(w, http.StatusUnauthorized)
+		return
+	}
+
+	err = app.words.Insert(r.Context(), userID, form.Word, translations)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+}
+
+func splitTranslations(raw string) (translations []string) {
+	for _, tr := range strings.Split(raw, ",") {
+		trimmed := strings.TrimSpace(tr)
+
+		if trimmed != "" {
+			translations = append(translations, trimmed)
+		}
+	}
+
+	return translations
 }

@@ -29,6 +29,8 @@ func (app *application) routes() http.Handler {
 
 			r.Post("/user/logout", app.logoutPost)
 			r.Get("/dashboard", app.dashboard)
+			r.Get("/word/add", app.wordAdd)
+			r.Post("/word/add", app.wordAddPost)
 		})
 	})
 

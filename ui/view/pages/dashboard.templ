@@ -8,7 +8,7 @@ templ Dashboard(r *http.Request) {
 	@layouts.Page("Dashboard") {
 		@partials.Header(r, true)
 		<main class="px-12 py-6">
-			Dashboard
+			<a href="/word/add" class="btn">New Word</a>
 		</main>
 	}
 }
