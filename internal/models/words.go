@@ -10,20 +10,24 @@ import (
 	"github.com/vekkele/worddy/internal/models/db"
 )
 
-type WordModel struct {
+type WordModel interface {
+	Insert(ctx context.Context, userID int64, word string, translations []string) error
+}
+
+type wordModel struct {
 	db   *db.Queries
 	pool *pgxpool.Pool
 }
 
 func NewWordModel(pool *pgxpool.Pool) WordModel {
 	db := db.New(pool)
-	return WordModel{
+	return &wordModel{
 		db:   db,
 		pool: pool,
 	}
 }
 
-func (m *WordModel) Insert(ctx context.Context, userID int64, word string, translations []string) error {
+func (m *wordModel) Insert(ctx context.Context, userID int64, word string, translations []string) error {
 	tx, err := m.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return err
@@ -57,7 +61,7 @@ func (m *WordModel) Insert(ctx context.Context, userID int64, word string, trans
 	return tx.Commit(ctx)
 }
 
-func (m *WordModel) calculateNextReview(hoursToNext int) time.Time {
+func (m *wordModel) calculateNextReview(hoursToNext int) time.Time {
 	currentTime := time.Now()
 	dur := time.Hour * time.Duration(hoursToNext)
 

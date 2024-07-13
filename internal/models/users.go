@@ -11,17 +11,23 @@ import (
 	"github.com/vekkele/worddy/internal/models/db"
 )
 
-type UserModel struct {
+type UserModel interface {
+	Insert(ctx context.Context, email, password string) error
+	Authenticate(ctx context.Context, email, password string) (int64, error)
+	Exists(ctx context.Context, id int64) (bool, error)
+}
+
+type userModel struct {
 	db   *db.Queries
 	pool *pgxpool.Pool
 }
 
 func NewUserModel(pool *pgxpool.Pool) UserModel {
 	queries := db.New(pool)
-	return UserModel{db: queries, pool: pool}
+	return &userModel{db: queries, pool: pool}
 }
 
-func (m *UserModel) Insert(ctx context.Context, email, password string) error {
+func (m *userModel) Insert(ctx context.Context, email, password string) error {
 	hash, err := argon2id.CreateHash(password, argon2id.DefaultParams)
 	if err != nil {
 		return err
@@ -47,7 +53,7 @@ func (m *UserModel) Insert(ctx context.Context, email, password string) error {
 	return nil
 }
 
-func (m *UserModel) Authenticate(ctx context.Context, email, password string) (int64, error) {
+func (m *userModel) Authenticate(ctx context.Context, email, password string) (int64, error) {
 	row, err := m.db.GetUserByEmail(ctx, email)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -68,6 +74,6 @@ func (m *UserModel) Authenticate(ctx context.Context, email, password string) (i
 	return row.ID, nil
 }
 
-func (m *UserModel) Exists(ctx context.Context, id int64) (bool, error) {
+func (m *userModel) Exists(ctx context.Context, id int64) (bool, error) {
 	return m.db.UserExists(ctx, id)
 }

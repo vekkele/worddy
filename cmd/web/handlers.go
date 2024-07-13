@@ -85,8 +85,6 @@ func (app *application) loginPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_ = userID
-
 	if err := app.sessionManager.RenewToken(r.Context()); err != nil {
 		app.serverError(w, r, err)
 		return
