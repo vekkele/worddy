@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"runtime/debug"
+	"strings"
 
 	"github.com/a-h/templ"
 	"github.com/go-playground/form/v4"
@@ -60,4 +61,17 @@ func (app *application) isAuthenticated(r *http.Request) bool {
 	}
 
 	return isAuthenticated
+}
+
+func splitTranslations(raw string) []string {
+	translations := []string{}
+	for _, tr := range strings.Split(raw, ",") {
+		trimmed := strings.TrimSpace(tr)
+
+		if trimmed != "" {
+			translations = append(translations, trimmed)
+		}
+	}
+
+	return translations
 }

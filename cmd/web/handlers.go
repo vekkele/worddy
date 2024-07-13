@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/vekkele/worddy/internal/models"
 	"github.com/vekkele/worddy/internal/validator"
@@ -146,16 +145,4 @@ func (app *application) wordAddPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
-}
-
-func splitTranslations(raw string) (translations []string) {
-	for _, tr := range strings.Split(raw, ",") {
-		trimmed := strings.TrimSpace(tr)
-
-		if trimmed != "" {
-			translations = append(translations, trimmed)
-		}
-	}
-
-	return translations
 }
