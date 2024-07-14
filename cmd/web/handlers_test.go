@@ -13,6 +13,7 @@ func TestHome(t *testing.T) {
 		app := newTestApplication()
 
 		ts := newTestServer(t, app.routes())
+		defer ts.Close()
 
 		resp, err := ts.Client().Get(ts.URL + "/")
 		if err != nil {
@@ -36,6 +37,7 @@ func TestHome(t *testing.T) {
 		authedSessionMiddleware := LoadAndSaveMock(app.sessionManager, "authenticatedUserID", int64(1))
 
 		ts := newTestServer(t, authedSessionMiddleware(app.routes()))
+		defer ts.Close()
 
 		resp, err := ts.Client().Get(ts.URL + "/")
 		if err != nil {
