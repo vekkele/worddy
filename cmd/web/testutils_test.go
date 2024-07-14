@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-playground/form/v4"
 	"github.com/vekkele/worddy/internal/models/mocks"
@@ -46,6 +47,22 @@ func newTestServer(t *testing.T, h http.Handler) *testServer {
 	}
 
 	return &testServer{ts}
+}
+
+func (ts *testServer) get(t *testing.T, urlPath string) (int, http.Header, *goquery.Document) {
+	rs, err := ts.Client().Get(ts.URL + urlPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer rs.Body.Close()
+
+	doc, err := goquery.NewDocumentFromReader(rs.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return rs.StatusCode, rs.Header, doc
 }
 
 func LoadAndSaveMock(session *scs.SessionManager, key string, value any) func(next http.Handler) http.Handler {

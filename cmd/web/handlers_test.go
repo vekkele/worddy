@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/PuerkitoBio/goquery"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,18 +14,9 @@ func TestHome(t *testing.T) {
 		ts := newTestServer(t, app.routes())
 		defer ts.Close()
 
-		resp, err := ts.Client().Get(ts.URL + "/")
-		if err != nil {
-			t.Fatal(err)
-		}
+		code, _, doc := ts.get(t, "/")
 
-		defer resp.Body.Close()
-
-		doc, err := goquery.NewDocumentFromReader(resp.Body)
-		if err != nil {
-			t.Fatal(err)
-		}
-
+		assert.Equal(t, http.StatusOK, code)
 		assert.True(t, doc.Find(`a[href="/user/signup"]`).Length() > 0, `Page must contain link to "/user/signup"`)
 		assert.True(t, doc.Find(`a[href="/user/login"]`).Length() > 0, `Page must contain link to "/user/login"`)
 	})
@@ -39,12 +29,9 @@ func TestHome(t *testing.T) {
 		ts := newTestServer(t, authedSessionMiddleware(app.routes()))
 		defer ts.Close()
 
-		resp, err := ts.Client().Get(ts.URL + "/")
-		if err != nil {
-			t.Fatal(err)
-		}
+		code, header, _ := ts.get(t, "/")
 
-		assert.Equal(t, http.StatusSeeOther, resp.StatusCode)
-		assert.Equal(t, "/dashboard", resp.Header.Get("Location"))
+		assert.Equal(t, http.StatusSeeOther, code)
+		assert.Equal(t, "/dashboard", header.Get("Location"))
 	})
 }
