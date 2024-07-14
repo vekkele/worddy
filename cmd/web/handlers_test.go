@@ -12,16 +12,16 @@ func TestHome(t *testing.T) {
 	h := app.routes()
 
 	tests := []struct {
-		name              string
-		loggedIn          bool
-		expectedCode      int
-		expectedLocation  string
-		expectedElemenets []string
+		name             string
+		loggedIn         bool
+		expectedCode     int
+		expectedLocation string
+		expectedElements []string
 	}{
 		{
-			name:              "No user logged in",
-			expectedCode:      http.StatusOK,
-			expectedElemenets: []string{`a[href="/user/signup"]`, `a[href="/user/login"]`},
+			name:             "No user logged in",
+			expectedCode:     http.StatusOK,
+			expectedElements: []string{`a[href="/user/signup"]`, `a[href="/user/login"]`},
 		},
 		{
 			name:             "User logged in",
@@ -48,7 +48,7 @@ func TestHome(t *testing.T) {
 				assert.Equal(t, tc.expectedLocation, header.Get("Location"))
 			}
 
-			for _, selector := range tc.expectedElemenets {
+			for _, selector := range tc.expectedElements {
 				assert.True(t, doc.Find(selector).Length() > 0, "Page must contain element for selector: %s", selector)
 			}
 		})
