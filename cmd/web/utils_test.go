@@ -48,7 +48,7 @@ func TestSplitTranslations(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			result := splitTranslations(tt.in)
 
-			assert.Equal(t, result, tt.expected)
+			assert.Equal(t, tt.expected, result)
 		})
 	}
 
