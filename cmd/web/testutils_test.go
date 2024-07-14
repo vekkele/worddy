@@ -65,7 +65,11 @@ func (ts *testServer) get(t *testing.T, urlPath string) (int, http.Header, *goqu
 	return rs.StatusCode, rs.Header, doc
 }
 
-func LoadAndSaveMock(session *scs.SessionManager, key string, value any) func(next http.Handler) http.Handler {
+func loggedInStubMiddleware(session *scs.SessionManager, h http.Handler) http.Handler {
+	return loadAndSaveStub(session, "authenticatedUserID", int64(1))(h)
+}
+
+func loadAndSaveStub(session *scs.SessionManager, key string, value any) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return session.LoadAndSave(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			session.Put(r.Context(), key, value)

@@ -34,8 +34,7 @@ func TestHome(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			if tc.loggedIn {
-				authedSessionMiddleware := LoadAndSaveMock(app.sessionManager, "authenticatedUserID", int64(1))
-				h = authedSessionMiddleware(h)
+				h = loggedInStubMiddleware(app.sessionManager, h)
 			}
 
 			ts := newTestServer(t, h)
