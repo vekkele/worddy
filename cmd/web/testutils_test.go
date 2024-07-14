@@ -47,3 +47,12 @@ func newTestServer(t *testing.T, h http.Handler) *testServer {
 
 	return &testServer{ts}
 }
+
+func LoadAndSaveMock(session *scs.SessionManager, key string, value any) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return session.LoadAndSave(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			session.Put(r.Context(), key, value)
+			next.ServeHTTP(w, r)
+		}))
+	}
+}
