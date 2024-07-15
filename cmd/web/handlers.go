@@ -74,10 +74,17 @@ func (app *application) loginPost(w http.ResponseWriter, r *http.Request) {
 	form.CheckField(validator.Matches(form.Email, validator.EmailRX), "email", "Invalid email format")
 	form.CheckField(validator.NotBlank(form.Password), "password", "This field cannot be blank")
 
+	if !form.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		app.render(w, r, pages.Login(r, form))
+		return
+	}
+
 	userID, err := app.users.Authenticate(r.Context(), form.Email, form.Password)
 	if err != nil {
 		if errors.Is(err, models.ErrInvalidCredentials) {
 			form.AddNonFieldError("Invalid email or password")
+			w.WriteHeader(http.StatusUnprocessableEntity)
 			app.render(w, r, pages.Login(r, form))
 			return
 		}

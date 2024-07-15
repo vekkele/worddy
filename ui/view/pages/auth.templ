@@ -70,15 +70,15 @@ templ Login(r *http.Request, form LoginForm) {
 				Label:       "Email",
 				Type:        "email",
 				Placeholder: "Enter your email",
-				Required:    true,
 				Value:       form.Email,
+				Error:       form.FieldErrors["email"],
 			})
 			@partials.TextInput(partials.TextInputProps{
 				Name:        "password",
 				Label:       "Password",
 				Type:        "password",
 				Placeholder: "Enter your password",
-				Required:    true,
+				Error:       form.FieldErrors["password"],
 			})
 			<button class="btn">Submit</button>
 			<a href="/user/signup" class="self-center link">Sign Up</a>
