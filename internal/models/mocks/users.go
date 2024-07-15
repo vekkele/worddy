@@ -20,7 +20,7 @@ var User = db.User{
 	},
 }
 
-const mockUserPassword = "pass123"
+const UserPassword = "pass123"
 
 func (m *UserModel) Insert(ctx context.Context, email, password string) error {
 	if email == User.Email {
@@ -31,7 +31,7 @@ func (m *UserModel) Insert(ctx context.Context, email, password string) error {
 }
 
 func (m *UserModel) Authenticate(ctx context.Context, email, password string) (int64, error) {
-	if email == User.Email && password == mockUserPassword {
+	if email == User.Email && password == UserPassword {
 		return 1, nil
 	}
 

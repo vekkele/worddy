@@ -58,6 +58,125 @@ func TestHome(t *testing.T) {
 	}
 }
 
+func TestLoginPost(t *testing.T) {
+	app := newTestApplication()
+	ts := newTestServer(t, app.routes())
+	defer ts.Close()
+
+	_, _, doc := ts.get(t, "/user/login")
+
+	validCSRFToken := extractCSRFToken(doc)
+
+	var (
+		validEmail    = mocks.User.Email
+		validPassword = mocks.UserPassword
+	)
+
+	tests := []struct {
+		name                string
+		email               string
+		password            string
+		csrfToken           string
+		expectedCode        int
+		expectedLocation    string
+		expectedFormAction  string
+		expectedFieldErrors map[string]string
+		expectedFormError   string
+	}{
+		{
+			name:             "Valid submission",
+			email:            validEmail,
+			password:         validPassword,
+			csrfToken:        validCSRFToken,
+			expectedCode:     http.StatusSeeOther,
+			expectedLocation: "/dashboard",
+		},
+		{
+			name:                "Empty email",
+			email:               "",
+			password:            validPassword,
+			csrfToken:           validCSRFToken,
+			expectedCode:        http.StatusUnprocessableEntity,
+			expectedFormAction:  "/user/login",
+			expectedFieldErrors: map[string]string{"email": "blank"},
+		},
+		{
+			name:                "Invalid email",
+			email:               "invalidEmail",
+			password:            validPassword,
+			csrfToken:           validCSRFToken,
+			expectedCode:        http.StatusUnprocessableEntity,
+			expectedFormAction:  "/user/login",
+			expectedFieldErrors: map[string]string{"email": "Invalid"},
+		},
+		{
+			name:                "Empty password",
+			email:               validEmail,
+			password:            "",
+			csrfToken:           validCSRFToken,
+			expectedCode:        http.StatusUnprocessableEntity,
+			expectedFormAction:  "/user/login",
+			expectedFieldErrors: map[string]string{"password": "blank"},
+		},
+		{
+			name:               "Wrong email",
+			email:              "wrong@email.test",
+			password:           validEmail,
+			csrfToken:          validCSRFToken,
+			expectedCode:       http.StatusUnprocessableEntity,
+			expectedFormAction: "/user/login",
+			expectedFormError:  "email or password",
+		},
+		{
+			name:               "Wrong password",
+			email:              validEmail,
+			password:           "wrongpassword",
+			csrfToken:          validCSRFToken,
+			expectedCode:       http.StatusUnprocessableEntity,
+			expectedFormAction: "/user/login",
+			expectedFormError:  "email or password",
+		},
+		{
+			name:         "Invalid CSRF token",
+			email:        validEmail,
+			password:     validPassword,
+			csrfToken:    "wrong token",
+			expectedCode: http.StatusBadRequest,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			form := url.Values{}
+			form.Add("email", tc.email)
+			form.Add("password", tc.password)
+			form.Add("csrf_token", tc.csrfToken)
+
+			code, header, doc := ts.postForm(t, "/user/login", form)
+
+			assert.Equal(t, tc.expectedCode, code)
+			assert.Equal(t, tc.expectedLocation, header.Get("Location"))
+
+			if tc.expectedFormAction != "" {
+				formAction, _ := doc.Find("form").Attr("action")
+				assert.Equal(t, tc.expectedFormAction, formAction)
+			}
+
+			if tc.expectedFormError != "" {
+				formErr := doc.Find("form div[data-form-error]")
+				assert.Contains(t, formErr.Text(), tc.expectedFormError)
+			}
+
+			if tc.expectedFieldErrors != nil {
+				for name, message := range tc.expectedFieldErrors {
+					fieldErr := doc.Find(fmt.Sprintf(`form div[data-field-error="%s"]`, name))
+					assert.Contains(t, fieldErr.Text(), message)
+				}
+			}
+		})
+	}
+}
+
 func TestSignupPost(t *testing.T) {
 	app := newTestApplication()
 	ts := newTestServer(t, app.routes())
