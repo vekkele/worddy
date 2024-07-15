@@ -41,6 +41,7 @@ func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
 	form.CheckField(form.Password == form.PasswordConfirm, "password-confirm", "Passwords do not match")
 
 	if !form.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
 		app.render(w, r, pages.Signup(r, form))
 		return
 	}
@@ -48,6 +49,7 @@ func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
 	if err := app.users.Insert(r.Context(), form.Email, form.Password); err != nil {
 		if errors.Is(err, models.ErrDuplicateEmail) {
 			form.AddFieldError("email", "Email address is already in use")
+			w.WriteHeader(http.StatusUnprocessableEntity)
 			app.render(w, r, pages.Signup(r, form))
 			return
 		}
