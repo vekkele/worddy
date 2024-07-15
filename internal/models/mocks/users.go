@@ -11,7 +11,7 @@ import (
 
 type UserModel struct{}
 
-var mockUser = db.User{
+var User = db.User{
 	ID:    1,
 	Email: "john@doe.test",
 	CreatedAt: pgtype.Timestamptz{
@@ -23,7 +23,7 @@ var mockUser = db.User{
 const mockUserPassword = "pass123"
 
 func (m *UserModel) Insert(ctx context.Context, email, password string) error {
-	if email == mockUser.Email {
+	if email == User.Email {
 		return models.ErrDuplicateEmail
 	}
 
@@ -31,7 +31,7 @@ func (m *UserModel) Insert(ctx context.Context, email, password string) error {
 }
 
 func (m *UserModel) Authenticate(ctx context.Context, email, password string) (int64, error) {
-	if email == mockUser.Email && password == mockUserPassword {
+	if email == User.Email && password == mockUserPassword {
 		return 1, nil
 	}
 
@@ -39,7 +39,7 @@ func (m *UserModel) Authenticate(ctx context.Context, email, password string) (i
 }
 
 func (m *UserModel) Exists(ctx context.Context, id int64) (bool, error) {
-	if id == mockUser.ID {
+	if id == User.ID {
 		return true, nil
 	}
 

@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"net/url"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/vekkele/worddy/internal/models/mocks"
 )
 
 func TestHome(t *testing.T) {
@@ -51,6 +54,139 @@ func TestHome(t *testing.T) {
 			for _, selector := range tc.expectedElements {
 				assert.True(t, doc.Find(selector).Length() > 0, "Page must contain element for selector: %s", selector)
 			}
+		})
+	}
+}
+
+func TestSignupPost(t *testing.T) {
+	app := newTestApplication()
+	ts := newTestServer(t, app.routes())
+	defer ts.Close()
+
+	_, _, doc := ts.get(t, "/user/signup")
+
+	validCSRFToken := extractCSRFToken(doc)
+
+	const (
+		validEmail    = "email@example.com"
+		validPassword = "pass123"
+	)
+
+	tests := []struct {
+		name               string
+		email              string
+		password           string
+		passwordConfirm    string
+		csrfToken          string
+		expectedCode       int
+		expectedLocation   string
+		expectedFormAction string
+		expectedError      map[string]string
+	}{
+		{
+			name:             "Valid submission",
+			email:            validEmail,
+			password:         validPassword,
+			passwordConfirm:  validPassword,
+			csrfToken:        validCSRFToken,
+			expectedCode:     http.StatusSeeOther,
+			expectedLocation: "/user/login",
+		},
+		{
+			name:               "Empty email",
+			email:              "",
+			password:           validPassword,
+			passwordConfirm:    validPassword,
+			csrfToken:          validCSRFToken,
+			expectedCode:       http.StatusUnprocessableEntity,
+			expectedFormAction: "/user/signup",
+			expectedError:      map[string]string{"email": "blank"},
+		},
+		{
+			name:               "Invalid email",
+			email:              "invalidEmail",
+			password:           validPassword,
+			passwordConfirm:    validPassword,
+			csrfToken:          validCSRFToken,
+			expectedCode:       http.StatusUnprocessableEntity,
+			expectedFormAction: "/user/signup",
+			expectedError:      map[string]string{"email": "Invalid"},
+		},
+		{
+			name:               "Email duplication",
+			email:              mocks.User.Email,
+			password:           validPassword,
+			passwordConfirm:    validPassword,
+			csrfToken:          validCSRFToken,
+			expectedCode:       http.StatusUnprocessableEntity,
+			expectedFormAction: "/user/signup",
+			expectedError:      map[string]string{"email": "already in use"},
+		},
+		{
+			name:               "Empty password",
+			email:              validEmail,
+			password:           "",
+			passwordConfirm:    "",
+			csrfToken:          validCSRFToken,
+			expectedCode:       http.StatusUnprocessableEntity,
+			expectedFormAction: "/user/signup",
+			expectedError:      map[string]string{"password": "blank"},
+		},
+		{
+			name:               "Short password",
+			email:              validEmail,
+			password:           "123",
+			passwordConfirm:    "123",
+			csrfToken:          validCSRFToken,
+			expectedCode:       http.StatusUnprocessableEntity,
+			expectedFormAction: "/user/signup",
+			expectedError:      map[string]string{"password": "6"},
+		},
+		{
+			name:               "Password confirm does not match",
+			email:              validEmail,
+			password:           validPassword,
+			passwordConfirm:    "another password",
+			csrfToken:          validCSRFToken,
+			expectedCode:       http.StatusUnprocessableEntity,
+			expectedFormAction: "/user/signup",
+			expectedError:      map[string]string{"password-confirm": "match"},
+		},
+		{
+			name:            "Invalid CSRF token",
+			email:           validEmail,
+			password:        validPassword,
+			passwordConfirm: validPassword,
+			csrfToken:       "wrong token",
+			expectedCode:    http.StatusBadRequest,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			form := url.Values{}
+			form.Add("email", tc.email)
+			form.Add("password", tc.password)
+			form.Add("password-confirm", tc.passwordConfirm)
+			form.Add("csrf_token", tc.csrfToken)
+
+			code, header, doc := ts.postForm(t, "/user/signup", form)
+
+			assert.Equal(t, tc.expectedCode, code)
+			assert.Equal(t, tc.expectedLocation, header.Get("Location"))
+
+			if tc.expectedFormAction != "" {
+				formAction, _ := doc.Find("form").Attr("action")
+				assert.Equal(t, tc.expectedFormAction, formAction)
+			}
+
+			if tc.expectedError != nil {
+				for name, message := range tc.expectedError {
+					fieldErr := doc.Find(fmt.Sprintf(`form div[data-field-error="%s"]`, name))
+					assert.Contains(t, fieldErr.Text(), message)
+				}
+			}
+
 		})
 	}
 }

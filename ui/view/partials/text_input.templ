@@ -28,6 +28,6 @@ templ TextInput(p TextInputProps) {
 			name={ p.Name }
 			value={ p.Value }
 		/>
-		@FieldError(p.Error)
+		@FieldError(p.Name, p.Error)
 	</label>
 }

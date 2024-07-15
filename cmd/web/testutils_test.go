@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 	"time"
 
@@ -65,6 +66,22 @@ func (ts *testServer) get(t *testing.T, urlPath string) (int, http.Header, *goqu
 	return rs.StatusCode, rs.Header, doc
 }
 
+func (ts *testServer) postForm(t *testing.T, urlPath string, form url.Values) (int, http.Header, *goquery.Document) {
+	rs, err := ts.Client().PostForm(ts.URL+urlPath, form)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer rs.Body.Close()
+
+	doc, err := goquery.NewDocumentFromReader(rs.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return rs.StatusCode, rs.Header, doc
+}
+
 func loggedInStubMiddleware(session *scs.SessionManager, h http.Handler) http.Handler {
 	return loadAndSaveStub(session, "authenticatedUserID", int64(1))(h)
 }
@@ -76,4 +93,10 @@ func loadAndSaveStub(session *scs.SessionManager, key string, value any) func(ne
 			next.ServeHTTP(w, r)
 		}))
 	}
+}
+
+func extractCSRFToken(doc *goquery.Document) string {
+	token, _ := doc.Find(`input[name="csrf_token"]`).First().Attr("value")
+
+	return token
 }
