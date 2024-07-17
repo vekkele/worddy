@@ -34,3 +34,7 @@ db_status:
 
 db_up:
 	goose -dir db/migrations postgres $(WORDDY_DB_DSN) up
+
+cover:
+	go test -coverprofile=./tmp/coverage.out ./...
+	go tool cover -html=./tmp/coverage.out
