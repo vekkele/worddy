@@ -137,15 +137,12 @@ func (app *application) wordAddPost(w http.ResponseWriter, r *http.Request) {
 	form.CheckField(len(translations) > 0, "translations", "At least one non-empty translation must be provided")
 
 	if !form.Valid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
 		app.render(w, r, pages.WordAdd(r, form))
 		return
 	}
 
 	userID := app.authenticatedUserID(r)
-	if userID == 0 {
-		app.clientError(w, http.StatusUnauthorized)
-		return
-	}
 
 	err = app.words.Insert(r.Context(), userID, form.Word, translations)
 	if err != nil {

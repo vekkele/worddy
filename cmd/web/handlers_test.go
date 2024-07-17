@@ -309,3 +309,90 @@ func TestSignupPost(t *testing.T) {
 		})
 	}
 }
+
+func TestAddWordPost(t *testing.T) {
+	app := newTestApplication()
+	h := loggedInStubMiddleware(app.sessionManager, app.routes())
+	ts := newTestServer(t, h)
+	defer ts.Close()
+
+	_, _, doc := ts.get(t, "/word/add")
+	validCSRFToken := extractCSRFToken(doc)
+
+	const (
+		validWord         = "Word"
+		validTranslations = "translation1, translation2"
+	)
+
+	tests := []struct {
+		name               string
+		word               string
+		translations       string
+		csrfToken          string
+		expectedCode       int
+		expectedLocation   string
+		expectedFormAction string
+		expectedErrors     map[string]string
+	}{
+		{
+			name:             "Valid submission",
+			word:             validWord,
+			translations:     validTranslations,
+			csrfToken:        validCSRFToken,
+			expectedCode:     http.StatusSeeOther,
+			expectedLocation: "/dashboard",
+		},
+		{
+			name:               "Empty word",
+			word:               "",
+			translations:       validTranslations,
+			expectedCode:       http.StatusUnprocessableEntity,
+			csrfToken:          validCSRFToken,
+			expectedFormAction: "/word/add",
+			expectedErrors:     map[string]string{"word": "blank"},
+		},
+		{
+			name:               "Empty translations",
+			word:               validWord,
+			translations:       "",
+			expectedCode:       http.StatusUnprocessableEntity,
+			csrfToken:          validCSRFToken,
+			expectedFormAction: "/word/add",
+			expectedErrors:     map[string]string{"translations": "empty"},
+		},
+		{
+			name:         "Invalid csrf token",
+			word:         validWord,
+			translations: validTranslations,
+			csrfToken:    "wrong token",
+			expectedCode: http.StatusBadRequest,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			form := url.Values{}
+			form.Add("word", tc.word)
+			form.Add("translations", tc.translations)
+			form.Add("csrf_token", tc.csrfToken)
+
+			code, header, doc := ts.postForm(t, "/word/add", form)
+
+			assert.Equal(t, tc.expectedCode, code)
+			assert.Equal(t, tc.expectedLocation, header.Get("Location"))
+
+			if tc.expectedFormAction != "" {
+				formAction, _ := doc.Find("form").Attr("action")
+				assert.Equal(t, tc.expectedFormAction, formAction)
+			}
+
+			if tc.expectedErrors != nil {
+				for name, message := range tc.expectedErrors {
+					fieldErr := doc.Find(fmt.Sprintf(`form div[data-field-error="%s"]`, name))
+					assert.Contains(t, fieldErr.Text(), message)
+				}
+			}
+
+		})
+	}
+}
