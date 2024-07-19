@@ -4,7 +4,7 @@ go 1.21.4
 
 require (
 	github.com/PuerkitoBio/goquery v1.9.2
-	github.com/a-h/templ v0.2.598
+	github.com/a-h/templ v0.2.747
 	github.com/alexedwards/argon2id v1.0.0
 	github.com/alexedwards/scs/pgxstore v0.0.0-20240316134038-7e11d57e8885
 	github.com/alexedwards/scs/v2 v2.8.0
@@ -25,8 +25,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/crypto v0.22.0 // indirect
 	golang.org/x/net v0.24.0 // indirect
-	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.19.0 // indirect
+	golang.org/x/sync v0.3.0 // indirect
+	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
