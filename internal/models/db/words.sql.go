@@ -26,9 +26,10 @@ func (q *Queries) AddTranslation(ctx context.Context, arg AddTranslationParams) 
 	return err
 }
 
-const addWord = `-- name: AddWord :exec
+const addWord = `-- name: AddWord :one
 INSERT INTO words (word, next_review, stage_id, user_id)
 VALUES ($1, $2, $3, $4)
+RETURNING id
 `
 
 type AddWordParams struct {
@@ -38,14 +39,16 @@ type AddWordParams struct {
 	UserID     int64
 }
 
-func (q *Queries) AddWord(ctx context.Context, arg AddWordParams) error {
-	_, err := q.db.Exec(ctx, addWord,
+func (q *Queries) AddWord(ctx context.Context, arg AddWordParams) (int64, error) {
+	row := q.db.QueryRow(ctx, addWord,
 		arg.Word,
 		arg.NextReview,
 		arg.StageID,
 		arg.UserID,
 	)
-	return err
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }
 
 const getStageByLevel = `-- name: GetStageByLevel :one

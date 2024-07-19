@@ -48,7 +48,7 @@ func (m *wordModel) Insert(ctx context.Context, userID int64, word string, trans
 		return err
 	}
 
-	err = qtx.AddWord(ctx, db.AddWordParams{
+	id, err := qtx.AddWord(ctx, db.AddWordParams{
 		Word:       word,
 		NextReview: nextReviewTimestampz,
 		StageID:    stage.ID,
@@ -56,6 +56,13 @@ func (m *wordModel) Insert(ctx context.Context, userID int64, word string, trans
 	})
 	if err != nil {
 		return err
+	}
+
+	for _, t := range translations {
+		err = qtx.AddTranslation(ctx, db.AddTranslationParams{WordID: id, Translation: t})
+		if err != nil {
+			return err
+		}
 	}
 
 	return tx.Commit(ctx)
