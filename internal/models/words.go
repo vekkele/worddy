@@ -12,6 +12,7 @@ import (
 
 type WordModel interface {
 	Insert(ctx context.Context, userID int64, word string, translations []string) error
+	GetAll(ctx context.Context, userID int64) ([]Word, error)
 }
 
 type wordModel struct {
@@ -73,4 +74,32 @@ func (m *wordModel) calculateNextReview(hoursToNext int) time.Time {
 	dur := time.Hour * time.Duration(hoursToNext)
 
 	return currentTime.Add(dur)
+}
+
+type Word struct {
+	ID           int64
+	Word         string
+	Translations string
+	NextReview   time.Time
+	StageLevel   int32
+}
+
+func (m *wordModel) GetAll(ctx context.Context, userID int64) ([]Word, error) {
+	rows, err := m.db.GetUserWords(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	var words []Word
+	for _, w := range rows {
+		words = append(words, Word{
+			ID:           w.ID,
+			Word:         w.Word,
+			Translations: string(w.Translations),
+			NextReview:   w.NextReview.Time,
+			StageLevel:   w.Level,
+		})
+	}
+
+	return words, nil
 }

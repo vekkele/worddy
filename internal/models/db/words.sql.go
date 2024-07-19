@@ -67,3 +67,46 @@ func (q *Queries) GetStageByLevel(ctx context.Context, level int32) (GetStageByL
 	err := row.Scan(&i.ID, &i.Level, &i.HoursToNext)
 	return i, err
 }
+
+const getUserWords = `-- name: GetUserWords :many
+SELECT w.id, w.word, w.next_review, s.level, string_agg(t.translation, ', ') as translations
+FROM words w
+JOIN translations t ON w.id = t.word_id
+JOIN stages s ON w.stage_id = s.id
+WHERE w.user_id = $1
+GROUP BY w.id, s.level
+`
+
+type GetUserWordsRow struct {
+	ID           int64
+	Word         string
+	NextReview   pgtype.Timestamptz
+	Level        int32
+	Translations []byte
+}
+
+func (q *Queries) GetUserWords(ctx context.Context, userID int64) ([]GetUserWordsRow, error) {
+	rows, err := q.db.Query(ctx, getUserWords, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUserWordsRow
+	for rows.Next() {
+		var i GetUserWordsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Word,
+			&i.NextReview,
+			&i.Level,
+			&i.Translations,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
