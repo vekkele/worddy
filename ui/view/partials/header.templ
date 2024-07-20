@@ -1,7 +1,9 @@
 package partials
 
-import "github.com/justinas/nosurf"
-import "net/http"
+import (
+	"github.com/justinas/nosurf"
+	"net/http"
+)
 
 templ Header(r *http.Request, isAuthenticated bool) {
 	<header class="flex flex-row justify-end px-4 py-3">
