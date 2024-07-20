@@ -17,7 +17,7 @@ type WordAddForm struct {
 templ WordAdd(r *http.Request, form WordAddForm) {
 	@layouts.Page("New Word") {
 		<main class="px-12 py-6">
-			<form class="flex flex-col gap-4 max-w-96" action="/word/add" method="POST">
+			<form class="flex flex-col gap-4 max-w-96" hx-boost="true" action="/word/add" method="POST">
 				<input type="hidden" name="csrf_token" value={ nosurf.Token(r) }/>
 				@partials.TextInput(partials.TextInputProps{
 					Label:       "Word",

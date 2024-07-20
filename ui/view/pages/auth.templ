@@ -10,7 +10,7 @@ import (
 
 templ authForm(r *http.Request, action string) {
 	<main class="flex justify-center px-10 py-16">
-		<form class="flex flex-col flex-1 max-w-sm gap-6" action={ templ.URL(action) } method="POST">
+		<form class="flex flex-col flex-1 max-w-sm gap-6" hx-boost="true" action={ templ.URL(action) } method="POST">
 			<input type="hidden" name="csrf_token" value={ nosurf.Token(r) }/>
 			{ children... }
 		</form>
