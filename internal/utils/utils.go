@@ -36,3 +36,10 @@ func GetStageFromLevel(level int32) Stage {
 		return Apprentice
 	}
 }
+
+func CalculateNextReview(hoursToNext int32) time.Time {
+	currentTime := time.Now()
+	dur := time.Hour * time.Duration(hoursToNext)
+
+	return currentTime.Add(dur)
+}

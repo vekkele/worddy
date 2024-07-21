@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/vekkele/worddy/internal/models/db"
+	"github.com/vekkele/worddy/internal/utils"
 )
 
 type WordModel interface {
@@ -44,7 +45,7 @@ func (m *wordModel) Insert(ctx context.Context, userID int64, word string, trans
 
 	var nextReviewTimestampz pgtype.Timestamptz
 
-	err = nextReviewTimestampz.Scan(m.calculateNextReview(int(stage.HoursToNext)))
+	err = nextReviewTimestampz.Scan(utils.CalculateNextReview(stage.HoursToNext))
 	if err != nil {
 		return err
 	}
@@ -67,13 +68,6 @@ func (m *wordModel) Insert(ctx context.Context, userID int64, word string, trans
 	}
 
 	return tx.Commit(ctx)
-}
-
-func (m *wordModel) calculateNextReview(hoursToNext int) time.Time {
-	currentTime := time.Now()
-	dur := time.Hour * time.Duration(hoursToNext)
-
-	return currentTime.Add(dur)
 }
 
 type Word struct {
