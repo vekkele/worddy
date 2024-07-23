@@ -6,6 +6,7 @@ import (
 	"github.com/vekkele/worddy/ui/view/layouts"
 	"github.com/vekkele/worddy/ui/view/partials"
 	"net/http"
+	"strconv"
 )
 
 templ Dashboard(r *http.Request, words []models.Word) {
@@ -21,6 +22,7 @@ templ Dashboard(r *http.Request, words []models.Word) {
 							<th class="px-2 py-1 text-start">Word</th>
 							<th class="px-2 py-1 text-start">Translations</th>
 							<th class="px-2 py-1 text-start">Stage</th>
+							<th class="px-2 py-1 text-start">Level</th>
 							<th class="px-2 py-1 text-start">Next Review</th>
 						</tr>
 					</thead>
@@ -30,6 +32,7 @@ templ Dashboard(r *http.Request, words []models.Word) {
 								<td class="px-2 py-1">{ w.Word }</td>
 								<td class="px-2 py-1">{ w.Translations }</td>
 								<td class="px-2 py-1">{ string(utils.GetStageFromLevel(w.StageLevel)) }</td>
+								<td class="px-2 py-1">{ strconv.Itoa(int(w.StageLevel)) }</td>
 								<td class="px-2 py-1">{ utils.HumanDate(w.NextReview) }</td>
 							</tr>
 						}
