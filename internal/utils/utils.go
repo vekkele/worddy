@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"math"
 	"time"
 )
 
@@ -42,4 +43,23 @@ func CalculateNextReview(hoursToNext int32) time.Time {
 	dur := time.Hour * time.Duration(hoursToNext)
 
 	return currentTime.Add(dur).Truncate(time.Hour)
+}
+
+func CalculateNextStage(curLevel int32, wrongAnswers int32) int32 {
+	if wrongAnswers == 0 {
+		return curLevel + 1
+	}
+
+	incorrectAdjustmentCount := int32(math.Ceil(float64(wrongAnswers) / 2.0))
+	var srsPenaltyFactor int32 = 1
+	if curLevel >= 5 {
+		srsPenaltyFactor = 2
+	}
+
+	nextLevel := curLevel - incorrectAdjustmentCount*srsPenaltyFactor
+	if nextLevel < 1 {
+		return 1
+	}
+
+	return nextLevel
 }

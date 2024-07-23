@@ -14,6 +14,8 @@ import (
 type WordModel interface {
 	Insert(ctx context.Context, userID int64, word string, translations []string) error
 	GetAll(ctx context.Context, userID int64) ([]Word, error)
+	GetReview(ctx context.Context, userID int64) ([]Word, error)
+	UpdateWordStage(ctx context.Context, id, userID int64, wrongAnswers int32) error
 }
 
 type wordModel struct {
@@ -71,11 +73,11 @@ func (m *wordModel) Insert(ctx context.Context, userID int64, word string, trans
 }
 
 type Word struct {
-	ID           int64
-	Word         string
-	Translations string
-	NextReview   time.Time
-	StageLevel   int32
+	ID           int64     `json:"id"`
+	Word         string    `json:"word"`
+	Translations string    `json:"translations"`
+	NextReview   time.Time `json:"-"`
+	StageLevel   int32     `json:"stageLevel"`
 }
 
 func (m *wordModel) GetAll(ctx context.Context, userID int64) ([]Word, error) {
@@ -86,14 +88,56 @@ func (m *wordModel) GetAll(ctx context.Context, userID int64) ([]Word, error) {
 
 	var words []Word
 	for _, w := range rows {
-		words = append(words, Word{
-			ID:           w.ID,
-			Word:         w.Word,
-			Translations: string(w.Translations),
-			NextReview:   w.NextReview.Time,
-			StageLevel:   w.Level,
-		})
+		words = append(words, getWordFromDBRow(w))
 	}
 
 	return words, nil
+}
+
+func (m *wordModel) GetReview(ctx context.Context, userID int64) ([]Word, error) {
+	rows, err := m.db.GetUserReviewWords(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	var words []Word
+	for _, w := range rows {
+		words = append(words, getWordFromDBRow(db.GetUserWordsRow(w)))
+	}
+
+	return words, nil
+}
+
+func getWordFromDBRow(row db.GetUserWordsRow) Word {
+	return Word{
+		ID:           row.ID,
+		Word:         row.Word,
+		Translations: string(row.Translations),
+		NextReview:   row.NextReview.Time,
+		StageLevel:   row.Level,
+	}
+}
+
+func (m *wordModel) UpdateWordStage(ctx context.Context, id, userID int64, wrongAnswers int32) error {
+	word, err := m.db.GetWordByID(ctx, db.GetWordByIDParams{ID: id, UserID: userID})
+	if err != nil {
+		return err
+	}
+
+	nextLevel := utils.CalculateNextStage(word.Level, wrongAnswers)
+
+	stage, err := m.db.GetStageByLevel(ctx, nextLevel)
+	if err != nil {
+		return err
+	}
+
+	return m.db.UpdateWordStage(ctx, db.UpdateWordStageParams{
+		ID:      id,
+		UserID:  userID,
+		StageID: stage.ID,
+		NextReview: pgtype.Timestamptz{
+			Time:  utils.CalculateNextReview(stage.HoursToNext),
+			Valid: true,
+		},
+	})
 }

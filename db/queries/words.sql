@@ -17,3 +17,24 @@ JOIN translations t ON w.id = t.word_id
 JOIN stages s ON w.stage_id = s.id
 WHERE w.user_id = $1
 GROUP BY w.id, s.level;
+
+-- name: GetWordByID :one
+SELECT w.id, w.word, w.next_review, s.level, string_agg(t.translation, ', ') as translations
+FROM words w
+JOIN translations t ON w.id = t.word_id
+JOIN stages s ON w.stage_id = s.id
+WHERE w.user_id = $1 AND w.id = $2
+GROUP BY w.id, s.level;
+
+-- name: GetUserReviewWords :many
+SELECT w.id, w.word, w.next_review, s.level, string_agg(t.translation, ', ') as translations
+FROM words w
+JOIN translations t ON w.id = t.word_id
+JOIN stages s ON w.stage_id = s.id
+WHERE w.user_id = $1 AND w.next_review <= now()
+GROUP BY w.id, s.level;
+
+-- name: UpdateWordStage :exec
+UPDATE words
+SET stage_id = $1, next_review = $2
+WHERE id = $3 AND user_id = $4;

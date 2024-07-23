@@ -159,3 +159,47 @@ func (app *application) wordAddPost(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
+
+func (app *application) review(w http.ResponseWriter, r *http.Request) {
+	userID := app.authenticatedUserID(r)
+	words, err := app.words.GetReview(r.Context(), userID)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	if len(words) == 0 {
+		http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)
+		return
+	}
+
+	app.render(w, r, pages.Review(r, words))
+}
+
+type WordReviewForm struct {
+	ID           int64 `form:"id"`
+	WrongAnswers int32 `form:"wrongAnswers"`
+	Finish       bool  `form:"finish"`
+}
+
+func (app *application) reviewPost(w http.ResponseWriter, r *http.Request) {
+	var form WordReviewForm
+
+	err := app.decodePostForm(r, &form)
+	if err != nil {
+		app.clientError(w, http.StatusUnprocessableEntity)
+		return
+	}
+
+	userID := app.authenticatedUserID(r)
+
+	err = app.words.UpdateWordStage(r.Context(), form.ID, userID, form.WrongAnswers)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	if form.Finish {
+		w.Header().Add("HX-Location", "/dashboard")
+	}
+}

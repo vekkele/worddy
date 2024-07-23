@@ -68,6 +68,49 @@ func (q *Queries) GetStageByLevel(ctx context.Context, level int32) (GetStageByL
 	return i, err
 }
 
+const getUserReviewWords = `-- name: GetUserReviewWords :many
+SELECT w.id, w.word, w.next_review, s.level, string_agg(t.translation, ', ') as translations
+FROM words w
+JOIN translations t ON w.id = t.word_id
+JOIN stages s ON w.stage_id = s.id
+WHERE w.user_id = $1 AND w.next_review <= now()
+GROUP BY w.id, s.level
+`
+
+type GetUserReviewWordsRow struct {
+	ID           int64
+	Word         string
+	NextReview   pgtype.Timestamptz
+	Level        int32
+	Translations []byte
+}
+
+func (q *Queries) GetUserReviewWords(ctx context.Context, userID int64) ([]GetUserReviewWordsRow, error) {
+	rows, err := q.db.Query(ctx, getUserReviewWords, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUserReviewWordsRow
+	for rows.Next() {
+		var i GetUserReviewWordsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Word,
+			&i.NextReview,
+			&i.Level,
+			&i.Translations,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUserWords = `-- name: GetUserWords :many
 SELECT w.id, w.word, w.next_review, s.level, string_agg(t.translation, ', ') as translations
 FROM words w
@@ -109,4 +152,62 @@ func (q *Queries) GetUserWords(ctx context.Context, userID int64) ([]GetUserWord
 		return nil, err
 	}
 	return items, nil
+}
+
+const getWordByID = `-- name: GetWordByID :one
+SELECT w.id, w.word, w.next_review, s.level, string_agg(t.translation, ', ') as translations
+FROM words w
+JOIN translations t ON w.id = t.word_id
+JOIN stages s ON w.stage_id = s.id
+WHERE w.user_id = $1 AND w.id = $2
+GROUP BY w.id, s.level
+`
+
+type GetWordByIDParams struct {
+	UserID int64
+	ID     int64
+}
+
+type GetWordByIDRow struct {
+	ID           int64
+	Word         string
+	NextReview   pgtype.Timestamptz
+	Level        int32
+	Translations []byte
+}
+
+func (q *Queries) GetWordByID(ctx context.Context, arg GetWordByIDParams) (GetWordByIDRow, error) {
+	row := q.db.QueryRow(ctx, getWordByID, arg.UserID, arg.ID)
+	var i GetWordByIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.Word,
+		&i.NextReview,
+		&i.Level,
+		&i.Translations,
+	)
+	return i, err
+}
+
+const updateWordStage = `-- name: UpdateWordStage :exec
+UPDATE words
+SET stage_id = $1, next_review = $2
+WHERE id = $3 AND user_id = $4
+`
+
+type UpdateWordStageParams struct {
+	StageID    int64
+	NextReview pgtype.Timestamptz
+	ID         int64
+	UserID     int64
+}
+
+func (q *Queries) UpdateWordStage(ctx context.Context, arg UpdateWordStageParams) error {
+	_, err := q.db.Exec(ctx, updateWordStage,
+		arg.StageID,
+		arg.NextReview,
+		arg.ID,
+		arg.UserID,
+	)
+	return err
 }

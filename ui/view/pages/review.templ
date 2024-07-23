@@ -1,0 +1,22 @@
+package pages
+
+import (
+	"fmt"
+	"github.com/justinas/nosurf"
+	"github.com/vekkele/worddy/internal/models"
+	"github.com/vekkele/worddy/ui/view/layouts"
+	"net/http"
+)
+
+templ Review(r *http.Request, words []models.Word) {
+	@layouts.Page("Review") {
+		<main hx-headers={ fmt.Sprintf(`{"X-CSRF-Token": "%s"}`, nosurf.Token(r)) }>
+			<h1 id="current-word" class="p-4 text-xl bg-slate-400"></h1>
+			<button id="check-button" class="btn">Check / Next</button>
+			<input type="text" id="guess-input" class="text-black"/>
+			<div id="review-trigger" class="hidden" hx-boost="true" hx-put="/review" hx-trigger="word-review"></div>
+		</main>
+		@templ.JSONScript("review-words-data", words)
+		<script src="/static/js/review.js" type="text/javascript"></script>
+	}
+}
