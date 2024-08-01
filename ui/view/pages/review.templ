@@ -15,7 +15,7 @@ templ Review(r *http.Request, words []models.Word) {
 			<section id="word-section" class="h-[50vh] flex items-center justify-center">
 				<h1 id="current-word" class="p-4 text-4xl uppercase"></h1>
 			</section>
-			<section class="h-[50vh] flex justify-center items-start">
+			<section class="h-[50vh] flex flex-col items-center justify-start">
 				<actions class="flex items-center justify-center w-full gap-3 -translate-y-1/2">
 					<input
 						type="text"
@@ -29,6 +29,11 @@ templ Review(r *http.Request, words []models.Word) {
 						</div>
 					</button>
 				</actions>
+				<button id="info-button" class="btn">Show Info</button>
+				<section id="info-section" class="hidden px-6 py-4 mt-3 rounded-lg bg-slate-800">
+					<h2 class="mb-2 text-xl font-bold">Translations</h2>
+					<section id="info-translations"></section>
+				</section>
 			</section>
 			<div id="review-trigger" class="hidden" hx-boost="true" hx-put="/review" hx-trigger="word-review"></div>
 		</main>

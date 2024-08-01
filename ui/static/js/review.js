@@ -21,8 +21,16 @@ const STAGE_COLORS = {
 };
 
 function main() {
-  const { currentWordEl, checkBtn, guessInput, reviewTrigger, wordSection } =
-    getElements();
+  const {
+    currentWordEl,
+    checkBtn,
+    guessInput,
+    reviewTrigger,
+    wordSection,
+    infoSection,
+    infoButton,
+    infoTranslations
+  } = getElements();
 
   let words = getWordsData();
   let guess = "";
@@ -36,14 +44,19 @@ function main() {
   const correctGuessed = createSignal(/** @type {null | boolean} */ (null));
   correctGuessed.subscribe((correct) => {
     guessInput.disabled = correct !== null;
+    infoButton.disabled = correct === null;
 
     if (correct === null) {
       guessInput.classList.remove("bg-red-500", "bg-green-500");
+      infoSection.classList.toggle("hidden", true);
+      clearTranslationsHint();
       return;
     }
 
     guessInput.classList.toggle("bg-red-500", !correct);
     guessInput.classList.toggle("bg-green-500", correct);
+
+    fillTranslationsHint();
   });
 
   guessInput.addEventListener("change", (e) => {
@@ -51,6 +64,10 @@ function main() {
     if (!target) return;
 
     guess = target.value;
+  });
+
+  infoButton.addEventListener("click", () => {
+    infoSection.classList.toggle("hidden");
   });
 
   checkBtn.addEventListener("click", () => {
@@ -90,6 +107,20 @@ function main() {
       currentWord.value = words[0];
     }
   });
+
+  function fillTranslationsHint() {
+    const translations = currentWord.value.translations.split(",");
+    const translationElems = translations.map((translation) => {
+      const entry = document.createElement("h3");
+      entry.textContent = translation.trim();
+      return entry;
+    });
+    infoTranslations.replaceChildren(...translationElems);
+  }
+
+  function clearTranslationsHint() {
+    infoTranslations.replaceChildren();
+  }
 }
 
 function getWordsData() {
@@ -110,8 +141,20 @@ function getElements() {
   const guessInput = /** @type HTMLInputElement */ (getElement("guess-input"));
   const reviewTrigger = getElement("review-trigger");
   const wordSection = getElement("word-section");
+  const infoSection = getElement("info-section");
+  const infoButton = /** @type HTMLButtonElement */ (getElement("info-button"));
+  const infoTranslations = getElement("info-translations");
 
-  return { currentWordEl, checkBtn, guessInput, reviewTrigger, wordSection };
+  return {
+    currentWordEl,
+    checkBtn,
+    guessInput,
+    reviewTrigger,
+    wordSection,
+    infoSection,
+    infoButton,
+    infoTranslations
+  };
 }
 
 /**
