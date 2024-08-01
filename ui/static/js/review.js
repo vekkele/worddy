@@ -105,34 +105,26 @@ function getWordsData() {
 }
 
 function getElements() {
-  const currentWordEl = document.getElementById("current-word");
-  if (!currentWordEl) {
-    throw "no current-word element found";
-  }
-
-  const checkBtn = document.getElementById("check-button");
-  if (!checkBtn) {
-    throw "no check-button element found";
-  }
-
-  const guessInput = /** @type HTMLInputElement | null */ (
-    document.getElementById("guess-input")
-  );
-  if (!guessInput) {
-    throw "no guess-input element found";
-  }
-
-  const reviewTrigger = document.getElementById("review-trigger");
-  if (!reviewTrigger) {
-    throw "no review-trigger element found";
-  }
-
-  const wordSection = document.getElementById("word-section");
-  if (!wordSection) {
-    throw "no word-section element found";
-  }
+  const currentWordEl = getElement("current-word");
+  const checkBtn = getElement("check-button");
+  const guessInput = /** @type HTMLInputElement */ (getElement("guess-input"));
+  const reviewTrigger = getElement("review-trigger");
+  const wordSection = getElement("word-section");
 
   return { currentWordEl, checkBtn, guessInput, reviewTrigger, wordSection };
+}
+
+/**
+ *
+ * @param {string} id
+ */
+function getElement(id) {
+  const elem = document.getElementById(id);
+  if (!elem) {
+    throw `no element with id "${id}" found`;
+  }
+
+  return elem;
 }
 
 /**
