@@ -73,11 +73,12 @@ func (m *wordModel) Insert(ctx context.Context, userID int64, word string, trans
 }
 
 type Word struct {
-	ID           int64     `json:"id"`
-	Word         string    `json:"word"`
-	Translations string    `json:"translations"`
-	NextReview   time.Time `json:"-"`
-	StageLevel   int32     `json:"stageLevel"`
+	ID           int64       `json:"id"`
+	Word         string      `json:"word"`
+	Translations string      `json:"translations"`
+	NextReview   time.Time   `json:"-"`
+	StageLevel   int32       `json:"stageLevel"`
+	StageName    utils.Stage `json:"stageName"`
 }
 
 func (m *wordModel) GetAll(ctx context.Context, userID int64) ([]Word, error) {
@@ -115,6 +116,7 @@ func getWordFromDBRow(row db.GetUserWordsRow) Word {
 		Translations: string(row.Translations),
 		NextReview:   row.NextReview.Time,
 		StageLevel:   row.Level,
+		StageName:    utils.GetStageFromLevel(row.Level),
 	}
 }
 

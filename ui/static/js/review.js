@@ -9,10 +9,20 @@
  * @property {string} translations
  * @property {number} stageLevel
  * @property {number | undefined} wrongAnswers
+ * @property {string} stageName
  */
 
+const STAGE_COLORS = {
+  apprentice: "#db2777",
+  guru: "#9333ea",
+  master: "#2563eb",
+  enlightened: "#0284c7",
+  burned: "#57534e"
+};
+
 function main() {
-  const { currentWordEl, checkBtn, guessInput, reviewTrigger } = getElements();
+  const { currentWordEl, checkBtn, guessInput, reviewTrigger, wordSection } =
+    getElements();
 
   let words = getWordsData();
   let guess = "";
@@ -20,6 +30,7 @@ function main() {
   const currentWord = createSignal(words[0]);
   currentWord.subscribe((v) => {
     currentWordEl.innerText = v.word;
+    wordSection.style.backgroundColor = STAGE_COLORS[v.stageName];
   });
 
   const correctGuessed = createSignal(/** @type {null | boolean} */ (null));
@@ -116,7 +127,12 @@ function getElements() {
     throw "no review-trigger element found";
   }
 
-  return { currentWordEl, checkBtn, guessInput, reviewTrigger };
+  const wordSection = document.getElementById("word-section");
+  if (!wordSection) {
+    throw "no word-section element found";
+  }
+
+  return { currentWordEl, checkBtn, guessInput, reviewTrigger, wordSection };
 }
 
 /**

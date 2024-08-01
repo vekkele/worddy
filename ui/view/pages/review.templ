@@ -5,15 +5,31 @@ import (
 	"github.com/justinas/nosurf"
 	"github.com/vekkele/worddy/internal/models"
 	"github.com/vekkele/worddy/ui/view/layouts"
+	"github.com/vekkele/worddy/ui/view/partials/icons"
 	"net/http"
 )
 
 templ Review(r *http.Request, words []models.Word) {
 	@layouts.Page("Review") {
-		<main hx-headers={ fmt.Sprintf(`{"X-CSRF-Token": "%s"}`, nosurf.Token(r)) }>
-			<h1 id="current-word" class="p-4 text-xl bg-slate-400"></h1>
-			<button id="check-button" class="btn">Check / Next</button>
-			<input type="text" id="guess-input" class="text-black"/>
+		<main hx-headers={ fmt.Sprintf(`{"X-CSRF-Token": "%s"}`, nosurf.Token(r)) } class="h-full">
+			<section id="word-section" class="h-[50vh] flex items-center justify-center">
+				<h1 id="current-word" class="p-4 text-4xl uppercase"></h1>
+			</section>
+			<section class="h-[50vh] flex justify-center items-start">
+				<actions class="flex items-center justify-center w-full gap-3 -translate-y-1/2">
+					<input
+						type="text"
+						id="guess-input"
+						class="w-2/5 p-2 text-center border rounded-md border-slate-300 text-neutral-900"
+						placeholder="Enter one of translations"
+					/>
+					<button id="check-button" class="p-4 rounded-full btn">
+						<div class="rotate-90">
+							@icons.Triangle(icons.NewIconProps("32px"))
+						</div>
+					</button>
+				</actions>
+			</section>
 			<div id="review-trigger" class="hidden" hx-boost="true" hx-put="/review" hx-trigger="word-review"></div>
 		</main>
 		@templ.JSONScript("review-words-data", words)
