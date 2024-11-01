@@ -69,7 +69,7 @@ func (q *Queries) GetStageByLevel(ctx context.Context, level int32) (GetStageByL
 }
 
 const getUserReviewWords = `-- name: GetUserReviewWords :many
-SELECT w.id, w.word, w.next_review, s.level, string_agg(t.translation, ', ') as translations
+SELECT w.id, w.word, w.next_review, s.level, array_agg(t.translation)::text[] as translations
 FROM words w
 JOIN translations t ON w.id = t.word_id
 JOIN stages s ON w.stage_id = s.id
@@ -82,7 +82,7 @@ type GetUserReviewWordsRow struct {
 	Word         string
 	NextReview   pgtype.Timestamptz
 	Level        int32
-	Translations []byte
+	Translations []string
 }
 
 func (q *Queries) GetUserReviewWords(ctx context.Context, userID int64) ([]GetUserReviewWordsRow, error) {
@@ -112,7 +112,7 @@ func (q *Queries) GetUserReviewWords(ctx context.Context, userID int64) ([]GetUs
 }
 
 const getUserWords = `-- name: GetUserWords :many
-SELECT w.id, w.word, w.next_review, s.level, string_agg(t.translation, ', ') as translations
+SELECT w.id, w.word, w.next_review, s.level, array_agg(t.translation)::text[] as translations
 FROM words w
 JOIN translations t ON w.id = t.word_id
 JOIN stages s ON w.stage_id = s.id
@@ -125,7 +125,7 @@ type GetUserWordsRow struct {
 	Word         string
 	NextReview   pgtype.Timestamptz
 	Level        int32
-	Translations []byte
+	Translations []string
 }
 
 func (q *Queries) GetUserWords(ctx context.Context, userID int64) ([]GetUserWordsRow, error) {
@@ -155,7 +155,7 @@ func (q *Queries) GetUserWords(ctx context.Context, userID int64) ([]GetUserWord
 }
 
 const getWordByID = `-- name: GetWordByID :one
-SELECT w.id, w.word, w.next_review, s.level, string_agg(t.translation, ', ') as translations
+SELECT w.id, w.word, w.next_review, s.level, array_agg(t.translation)::text[] as translations
 FROM words w
 JOIN translations t ON w.id = t.word_id
 JOIN stages s ON w.stage_id = s.id
@@ -173,7 +173,7 @@ type GetWordByIDRow struct {
 	Word         string
 	NextReview   pgtype.Timestamptz
 	Level        int32
-	Translations []byte
+	Translations []string
 }
 
 func (q *Queries) GetWordByID(ctx context.Context, arg GetWordByIDParams) (GetWordByIDRow, error) {

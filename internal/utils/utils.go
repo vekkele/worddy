@@ -23,6 +23,18 @@ const (
 	Burned      = "burned"
 )
 
+var stageColors = map[Stage]string{
+	Apprentice:  "#db2777",
+	Guru:        "#9333ea",
+	Master:      "#2563eb",
+	Enlightened: "#0284c7",
+	Burned:      "#57534e",
+}
+
+func GetStageColor(stage Stage) string {
+	return stageColors[stage]
+}
+
 func GetStageFromLevel(level int32) Stage {
 	switch level {
 	case 9:

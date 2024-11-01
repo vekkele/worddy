@@ -3,41 +3,27 @@ package pages
 import (
 	"fmt"
 	"github.com/justinas/nosurf"
+	"net/http"
+
 	"github.com/vekkele/worddy/internal/models"
 	"github.com/vekkele/worddy/ui/view/layouts"
-	"github.com/vekkele/worddy/ui/view/partials/icons"
-	"net/http"
+	"github.com/vekkele/worddy/ui/view/partials"
 )
 
-templ Review(r *http.Request, words []models.Word) {
+templ Review(r *http.Request, word models.ReviewWord) {
 	@layouts.Page("Review") {
 		<main hx-headers={ fmt.Sprintf(`{"X-CSRF-Token": "%s"}`, nosurf.Token(r)) } class="h-full">
-			<section id="word-section" class="h-[50vh] flex items-center justify-center">
-				<h1 id="current-word" class="p-4 text-4xl uppercase"></h1>
-			</section>
-			<section class="h-[50vh] flex flex-col items-center justify-start">
-				<actions class="flex items-center justify-center w-full gap-3 -translate-y-1/2">
-					<input
-						type="text"
-						id="guess-input"
-						class="w-2/5 p-2 text-center border rounded-md border-slate-300 text-neutral-900"
-						placeholder="Enter one of translations"
-					/>
-					<button id="check-button" class="p-4 rounded-full btn">
-						<div class="rotate-90">
-							@icons.Triangle(icons.NewIconProps("32px"))
-						</div>
-					</button>
-				</actions>
-				<button id="info-button" class="btn">Show Info</button>
-				<section id="info-section" class="hidden px-6 py-4 mt-3 rounded-lg bg-slate-800">
-					<h2 class="mb-2 text-xl font-bold">Translations</h2>
-					<section id="info-translations"></section>
+			@partials.ReviewWordSection(partials.ReviewWordSectionProps{Word: word})
+			<section class="h-[50vh] flex py-10 flex-col items-center justify-start">
+				<section>
+					<h5>Translation:</h5>
+					for _, translation := range word.Translations {
+						<h6>{ translation }</h6>
+					}
 				</section>
+				<section id="info-section"></section>
 			</section>
-			<div id="review-trigger" class="hidden" hx-boost="true" hx-put="/review" hx-trigger="word-review"></div>
 		</main>
-		@templ.JSONScript("review-words-data", words)
-		<script src="/static/js/review.js" type="text/javascript"></script>
+		<div id="info-script"></div>
 	}
 }

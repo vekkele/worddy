@@ -32,7 +32,7 @@ func (app *application) routes() http.Handler {
 			r.Get("/word/add", app.wordAdd)
 			r.Post("/word/add", app.wordAddPost)
 			r.Get("/review", app.review)
-			r.Put("/review", app.reviewPost)
+			r.Post("/review/check", app.checkWord)
 		})
 	})
 

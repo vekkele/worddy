@@ -8,6 +8,13 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type ReviewWord struct {
+	WrongAnswers int32
+	WordID       int64
+	UserID       int64
+	CreatedAt    pgtype.Timestamptz
+}
+
 type Session struct {
 	Token  string
 	Data   []byte

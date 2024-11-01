@@ -17,6 +17,7 @@ import (
 type application struct {
 	users          models.UserModel
 	words          models.WordModel
+	reviewWords    models.ReviewWordsModel
 	formDecoder    *form.Decoder
 	logger         *slog.Logger
 	sessionManager *scs.SessionManager
@@ -45,6 +46,7 @@ func main() {
 	app := application{
 		users:          models.NewUserModel(pool),
 		words:          models.NewWordModel(pool),
+		reviewWords:    models.NewReviewWordsModel(pool),
 		formDecoder:    form.NewDecoder(),
 		logger:         logger,
 		sessionManager: sessionManager,

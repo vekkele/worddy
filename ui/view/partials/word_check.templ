@@ -1,0 +1,103 @@
+package partials
+
+import (
+	"github.com/vekkele/worddy/ui/view/partials/icons"
+	"strconv"
+)
+
+type CheckFormProps struct {
+	WordID       int64
+	Checked      bool
+	CorrectGuess bool
+	GuessValue   string
+}
+
+type CheckWordForm struct {
+	WordID int64  `form:"word-id"`
+	Guess  string `form:"guess"`
+}
+
+func checkedInputClass(checked bool, correctGuess bool) string {
+	if !checked {
+		return ""
+	}
+
+	if correctGuess {
+		return "bg-green-500"
+	}
+
+	return "bg-red-500"
+}
+
+templ CheckForm(p CheckFormProps) {
+	<form
+		if !p.Checked {
+			hx-post="/review/check"
+			hx-swap="outerHTML"
+		}
+		class="flex items-center self-end justify-center w-full gap-3 translate-y-1/2"
+	>
+		<input type="hidden" name="word-id" value={ strconv.FormatInt(p.WordID, 10) }/>
+		<input
+			type="text"
+			name="guess"
+			class={
+				"w-2/5 p-2 text-center border rounded-md border-slate-300 text-neutral-900",
+				checkedInputClass(p.Checked, p.CorrectGuess),
+			}
+			placeholder="Enter one of translations"
+			value={ p.GuessValue }
+			if p.Checked {
+				readonly
+			}
+		/>
+		<button
+			id="check-button"
+			class="p-4 rounded-full btn"
+			if p.Checked {
+				hx-get="/review"
+				hx-target="body"
+			}
+		>
+			<div class="rotate-90">
+				@icons.Triangle(icons.NewIconProps("32px"))
+			</div>
+		</button>
+	</form>
+}
+
+type WordCheckResultProps struct {
+	CheckFormProps
+	Translations []string
+}
+
+var helloHandle = templ.NewOnceHandle()
+
+templ WordCheckResult(p WordCheckResultProps) {
+	@CheckForm(p.CheckFormProps)
+	<section id="info-section" hx-swap-oob="true" class="flex flex-col items-center">
+		<button id="info-button" class="btn">Show Info</button>
+		<section id="info-message" class="invisible px-6 py-4 mt-3 rounded-lg bg-slate-800">
+			<h2 class="mb-2 text-xl font-bold">Translations</h2>
+			<section>
+				for _, translation := range p.Translations {
+					<h4>{ translation }</h4>
+				}
+			</section>
+		</section>
+	</section>
+	<script id="info-script" hx-swap-oob="true">
+		(function() {
+			const button = document.getElementById('info-button')
+			const info = document.getElementById('info-message')
+
+			function toggle() {
+				info.classList.toggle("invisible");
+				info.classList.toggle("visible");
+			}
+
+			button.removeEventListener("click", toggle);
+			button.addEventListener("click", toggle);
+		})()
+	</script>
+}

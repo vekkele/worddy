@@ -1,0 +1,36 @@
+package partials
+
+import (
+	"github.com/vekkele/worddy/internal/models"
+	"github.com/vekkele/worddy/internal/utils"
+)
+
+css sectionColor(stage utils.Stage) {
+	background-color: { utils.GetStageColor(stage) };
+}
+
+type ReviewWordSectionProps struct {
+	Word         models.ReviewWord
+	Checked      bool
+	CorrectGuess bool
+	GuessValue   string
+}
+
+templ ReviewWordSection(p ReviewWordSectionProps) {
+	<section
+		if p.Checked {
+			hx-target="this"
+		}
+		class={ "h-[50vh] flex flex-col items-center justify-center", sectionColor(p.Word.StageName) }
+	>
+		<h1 class="p-4 my-auto text-4xl uppercase">
+			{ p.Word.Word.Word }
+		</h1>
+		@CheckForm(CheckFormProps{
+			WordID:       p.Word.ID,
+			Checked:      p.Checked,
+			CorrectGuess: p.CorrectGuess,
+			GuessValue:   p.GuessValue,
+		})
+	</section>
+}

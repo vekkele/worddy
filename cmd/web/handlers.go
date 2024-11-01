@@ -7,6 +7,7 @@ import (
 	"github.com/vekkele/worddy/internal/models"
 	"github.com/vekkele/worddy/internal/validator"
 	"github.com/vekkele/worddy/ui/view/pages"
+	"github.com/vekkele/worddy/ui/view/partials"
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
@@ -162,28 +163,23 @@ func (app *application) wordAddPost(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) review(w http.ResponseWriter, r *http.Request) {
 	userID := app.authenticatedUserID(r)
-	words, err := app.words.GetReview(r.Context(), userID)
+	err := app.reviewWords.InitReview(r.Context(), userID)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
 	}
 
-	if len(words) == 0 {
-		http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)
+	nextWord, err := app.reviewWords.GetNextReviewWord(r.Context(), userID)
+	if err != nil {
+		app.serverError(w, r, err)
 		return
 	}
 
-	app.render(w, r, pages.Review(r, words))
+	app.render(w, r, pages.Review(r, nextWord))
 }
 
-type WordReviewForm struct {
-	ID           int64 `form:"id"`
-	WrongAnswers int32 `form:"wrongAnswers"`
-	Finish       bool  `form:"finish"`
-}
-
-func (app *application) reviewPost(w http.ResponseWriter, r *http.Request) {
-	var form WordReviewForm
+func (app *application) checkWord(w http.ResponseWriter, r *http.Request) {
+	var form partials.CheckWordForm
 
 	err := app.decodePostForm(r, &form)
 	if err != nil {
@@ -193,13 +189,19 @@ func (app *application) reviewPost(w http.ResponseWriter, r *http.Request) {
 
 	userID := app.authenticatedUserID(r)
 
-	err = app.words.UpdateWordStage(r.Context(), form.ID, userID, form.WrongAnswers)
+	correct, translations, err := app.reviewWords.CheckWord(r.Context(), userID, form.WordID, form.Guess)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
 	}
 
-	if form.Finish {
-		w.Header().Add("HX-Location", "/dashboard")
-	}
+	app.render(w, r, partials.WordCheckResult(partials.WordCheckResultProps{
+		CheckFormProps: partials.CheckFormProps{
+			WordID:       form.WordID,
+			Checked:      true,
+			CorrectGuess: correct,
+			GuessValue:   form.Guess,
+		},
+		Translations: translations,
+	}))
 }
