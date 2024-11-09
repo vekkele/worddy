@@ -27,16 +27,16 @@ db_rm:
 	docker compose --file ./db/dev/docker-compose.yml down -v
 
 db_migration:
-	goose -dir db/migrations -s create "$(name)" sql
+	goose -dir internal/store/postgres/migrations -s create "$(name)" sql
 
 db_status:
-	goose -dir db/migrations postgres $(WORDDY_DB_DSN) status
+	goose -dir internal/store/postgres/migrations postgres $(WORDDY_DB_DSN) status
 
 db_up:
-	goose -dir db/migrations postgres $(WORDDY_DB_DSN) up
+	goose -dir internal/store/postgres/migrations postgres $(WORDDY_DB_DSN) up
 
 db_down:
-	goose -dir db/migrations postgres $(WORDDY_DB_DSN) down
+	goose -dir internal/store/postgres/migrations postgres $(WORDDY_DB_DSN) down
 
 cover:
 	go test -coverprofile=./tmp/coverage.out ./...

@@ -10,14 +10,14 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-playground/form/v4"
 	"github.com/vekkele/worddy/internal/config"
-	"github.com/vekkele/worddy/internal/models"
-	"github.com/vekkele/worddy/internal/postgres"
+	"github.com/vekkele/worddy/internal/store"
+	"github.com/vekkele/worddy/internal/store/postgres"
 )
 
 type application struct {
-	users          models.UserModel
-	words          models.WordModel
-	reviewWords    models.ReviewWordsModel
+	users          store.UserStore
+	words          store.WordStore
+	reviewWords    store.ReviewWordsStore
 	formDecoder    *form.Decoder
 	logger         *slog.Logger
 	sessionManager *scs.SessionManager
@@ -44,9 +44,9 @@ func main() {
 	sessionManager.Cookie.Secure = true
 
 	app := application{
-		users:          models.NewUserModel(pool),
-		words:          models.NewWordModel(pool),
-		reviewWords:    models.NewReviewWordsModel(pool),
+		users:          postgres.NewUserStore(pool),
+		words:          postgres.NewWordStore(pool),
+		reviewWords:    postgres.NewReviewWordsStore(pool),
 		formDecoder:    form.NewDecoder(),
 		logger:         logger,
 		sessionManager: sessionManager,

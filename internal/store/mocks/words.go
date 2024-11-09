@@ -3,7 +3,7 @@ package mocks
 import (
 	"context"
 
-	"github.com/vekkele/worddy/internal/models"
+	"github.com/vekkele/worddy/internal/domain"
 )
 
 type WordModel struct{}
@@ -12,15 +12,15 @@ func (m *WordModel) Insert(ctx context.Context, userID int64, word string, trans
 	return nil
 }
 
-func (m *WordModel) GetAll(ctx context.Context, userID int64) ([]models.Word, error) {
-	return []models.Word{
+func (m *WordModel) GetAll(ctx context.Context, userID int64) ([]domain.Word, error) {
+	return []domain.Word{
 		{ID: 1, Word: "Word1", Translations: []string{"translation1, translation2"}},
 		{ID: 2, Word: "Word2", Translations: []string{"translation3, translation4"}},
 	}, nil
 }
 
-func (m *WordModel) GetReview(ctx context.Context, userID int64) ([]models.Word, error) {
-	return []models.Word{
+func (m *WordModel) GetReview(ctx context.Context, userID int64) ([]domain.Word, error) {
+	return []domain.Word{
 		{ID: 1, Word: "Word1", Translations: []string{"translation1, translation2"}},
 		{ID: 2, Word: "Word2", Translations: []string{"translation3, translation4"}},
 	}, nil

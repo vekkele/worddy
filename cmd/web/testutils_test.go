@@ -13,7 +13,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-playground/form/v4"
-	"github.com/vekkele/worddy/internal/models/mocks"
+	"github.com/vekkele/worddy/internal/store/mocks"
 )
 
 func newTestApplication() *application {

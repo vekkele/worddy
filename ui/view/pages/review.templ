@@ -5,12 +5,12 @@ import (
 	"github.com/justinas/nosurf"
 	"net/http"
 
-	"github.com/vekkele/worddy/internal/models"
+	"github.com/vekkele/worddy/internal/domain"
 	"github.com/vekkele/worddy/ui/view/layouts"
 	"github.com/vekkele/worddy/ui/view/partials"
 )
 
-templ Review(r *http.Request, word models.ReviewWord) {
+templ Review(r *http.Request, word domain.ReviewWord) {
 	@layouts.Page("Review") {
 		<main hx-headers={ fmt.Sprintf(`{"X-CSRF-Token": "%s"}`, nosurf.Token(r)) } class="h-full">
 			@partials.ReviewWordSection(partials.ReviewWordSectionProps{Word: word})

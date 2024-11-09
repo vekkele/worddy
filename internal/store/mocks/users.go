@@ -6,7 +6,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/vekkele/worddy/internal/models"
-	"github.com/vekkele/worddy/internal/models/db"
+	"github.com/vekkele/worddy/internal/store/postgres/db"
 )
 
 type UserModel struct{}

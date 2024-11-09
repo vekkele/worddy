@@ -1,37 +1,31 @@
-package models
+package postgres
 
 import (
 	"context"
-	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/vekkele/worddy/internal/models/db"
+	"github.com/vekkele/worddy/internal/domain"
+	"github.com/vekkele/worddy/internal/store"
+	"github.com/vekkele/worddy/internal/store/postgres/db"
 	"github.com/vekkele/worddy/internal/utils"
 )
 
-type WordModel interface {
-	Insert(ctx context.Context, userID int64, word string, translations []string) error
-	GetAll(ctx context.Context, userID int64) ([]Word, error)
-	GetReview(ctx context.Context, userID int64) ([]Word, error)
-	UpdateWordStage(ctx context.Context, id, userID int64, wrongAnswers int32) error
-}
-
-type wordModel struct {
+type wordStore struct {
 	db   *db.Queries
 	pool *pgxpool.Pool
 }
 
-func NewWordModel(pool *pgxpool.Pool) WordModel {
+func NewWordStore(pool *pgxpool.Pool) store.WordStore {
 	db := db.New(pool)
-	return &wordModel{
+	return &wordStore{
 		db:   db,
 		pool: pool,
 	}
 }
 
-func (m *wordModel) Insert(ctx context.Context, userID int64, word string, translations []string) error {
+func (m *wordStore) Insert(ctx context.Context, userID int64, word string, translations []string) error {
 	tx, err := m.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return err
@@ -72,22 +66,13 @@ func (m *wordModel) Insert(ctx context.Context, userID int64, word string, trans
 	return tx.Commit(ctx)
 }
 
-type Word struct {
-	ID           int64       `json:"id"`
-	Word         string      `json:"word"`
-	Translations []string    `json:"translations"`
-	NextReview   time.Time   `json:"-"`
-	StageLevel   int32       `json:"stageLevel"`
-	StageName    utils.Stage `json:"stageName"`
-}
-
-func (m *wordModel) GetAll(ctx context.Context, userID int64) ([]Word, error) {
+func (m *wordStore) GetAll(ctx context.Context, userID int64) ([]domain.Word, error) {
 	rows, err := m.db.GetUserWords(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 
-	var words []Word
+	var words []domain.Word
 	for _, w := range rows {
 		words = append(words, getWordFromDBRow(w))
 	}
@@ -95,13 +80,13 @@ func (m *wordModel) GetAll(ctx context.Context, userID int64) ([]Word, error) {
 	return words, nil
 }
 
-func (m *wordModel) GetReview(ctx context.Context, userID int64) ([]Word, error) {
+func (m *wordStore) GetReview(ctx context.Context, userID int64) ([]domain.Word, error) {
 	rows, err := m.db.GetUserReviewWords(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 
-	var words []Word
+	var words []domain.Word
 	for _, w := range rows {
 		words = append(words, getWordFromDBRow(db.GetUserWordsRow(w)))
 	}
@@ -109,8 +94,8 @@ func (m *wordModel) GetReview(ctx context.Context, userID int64) ([]Word, error)
 	return words, nil
 }
 
-func getWordFromDBRow(row db.GetUserWordsRow) Word {
-	return Word{
+func getWordFromDBRow(row db.GetUserWordsRow) domain.Word {
+	return domain.Word{
 		ID:           row.ID,
 		Word:         row.Word,
 		Translations: row.Translations,
@@ -120,7 +105,7 @@ func getWordFromDBRow(row db.GetUserWordsRow) Word {
 	}
 }
 
-func (m *wordModel) UpdateWordStage(ctx context.Context, id, userID int64, wrongAnswers int32) error {
+func (m *wordStore) UpdateWordStage(ctx context.Context, id, userID int64, wrongAnswers int32) error {
 	word, err := m.db.GetWordByID(ctx, db.GetWordByIDParams{ID: id, UserID: userID})
 	if err != nil {
 		return err

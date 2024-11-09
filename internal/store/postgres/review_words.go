@@ -1,4 +1,4 @@
-package models
+package postgres
 
 import (
 	"context"
@@ -6,27 +6,23 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/vekkele/worddy/internal/models/db"
+	"github.com/vekkele/worddy/internal/domain"
+	"github.com/vekkele/worddy/internal/store"
+	"github.com/vekkele/worddy/internal/store/postgres/db"
 	"github.com/vekkele/worddy/internal/utils"
 )
 
-type ReviewWordsModel interface {
-	InitReview(ctx context.Context, userID int64) error
-	GetNextReviewWord(ctx context.Context, userID int64) (ReviewWord, error)
-	CheckWord(ctx context.Context, userID int64, wordID int64, guess string) (bool, []string, error)
-}
-
-type reviewWordsModel struct {
+type reviewWordsStore struct {
 	db   *db.Queries
 	pool *pgxpool.Pool
 }
 
-func NewReviewWordsModel(pool *pgxpool.Pool) ReviewWordsModel {
+func NewReviewWordsStore(pool *pgxpool.Pool) store.ReviewWordsStore {
 	queries := db.New(pool)
-	return &reviewWordsModel{db: queries, pool: pool}
+	return &reviewWordsStore{db: queries, pool: pool}
 }
 
-func (m *reviewWordsModel) InitReview(ctx context.Context, userID int64) error {
+func (m *reviewWordsStore) InitReview(ctx context.Context, userID int64) error {
 	tx, err := m.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return err
@@ -54,15 +50,10 @@ func (m *reviewWordsModel) InitReview(ctx context.Context, userID int64) error {
 	return tx.Commit(ctx)
 }
 
-type ReviewWord struct {
-	Word
-	WrongAnswers int32
-}
-
-func (m *reviewWordsModel) GetNextReviewWord(ctx context.Context, userID int64) (ReviewWord, error) {
+func (m *reviewWordsStore) GetNextReviewWord(ctx context.Context, userID int64) (domain.ReviewWord, error) {
 	tx, err := m.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
-		return ReviewWord{}, err
+		return domain.ReviewWord{}, err
 	}
 	defer tx.Rollback(ctx)
 
@@ -70,26 +61,26 @@ func (m *reviewWordsModel) GetNextReviewWord(ctx context.Context, userID int64) 
 
 	row, err := qtx.GetNextReviewWord(ctx, userID)
 	if err != nil {
-		return ReviewWord{}, err
+		return domain.ReviewWord{}, err
 	}
 
 	wordRow, err := qtx.GetWordByID(ctx, db.GetWordByIDParams{UserID: userID, ID: row.WordID})
 	if err != nil {
-		return ReviewWord{}, err
+		return domain.ReviewWord{}, err
 	}
 
 	err = tx.Commit(ctx)
 	if err != nil {
-		return ReviewWord{}, err
+		return domain.ReviewWord{}, err
 	}
 
-	return ReviewWord{
+	return domain.ReviewWord{
 		Word:         getWordFromDBRow(db.GetUserWordsRow(wordRow)),
 		WrongAnswers: row.WrongAnswers,
 	}, nil
 }
 
-func (m *reviewWordsModel) CheckWord(ctx context.Context, userID int64, wordID int64, guess string) (bool, []string, error) {
+func (m *reviewWordsStore) CheckWord(ctx context.Context, userID int64, wordID int64, guess string) (bool, []string, error) {
 	tx, err := m.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return false, nil, err

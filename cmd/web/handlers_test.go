@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vekkele/worddy/internal/models/mocks"
+	"github.com/vekkele/worddy/internal/store/mocks"
 )
 
 func TestHome(t *testing.T) {
