@@ -1,12 +1,9 @@
 package partials
 
-import (
-	"github.com/vekkele/worddy/internal/domain"
-	"github.com/vekkele/worddy/internal/utils"
-)
+import "github.com/vekkele/worddy/internal/domain"
 
-css sectionColor(stage utils.Stage) {
-	background-color: { utils.GetStageColor(stage) };
+css bgColor(color string) {
+	background-color: { color };
 }
 
 type ReviewWordSectionProps struct {
@@ -21,7 +18,7 @@ templ ReviewWordSection(p ReviewWordSectionProps) {
 		if p.Checked {
 			hx-target="this"
 		}
-		class={ "h-[50vh] flex flex-col items-center justify-center", sectionColor(p.Word.StageName) }
+		class={ "h-[50vh] flex flex-col items-center justify-center", bgColor(p.Word.StageColor()) }
 	>
 		<h1 class="p-4 my-auto text-4xl uppercase">
 			{ p.Word.Word.Word }

@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"github.com/alexedwards/argon2id"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/vekkele/worddy/internal/domain"
 	"github.com/vekkele/worddy/internal/store"
 	"github.com/vekkele/worddy/internal/store/postgres/db"
 )
@@ -22,23 +22,19 @@ func NewUserStore(pool *pgxpool.Pool) store.UserStore {
 	return &userStore{db: queries, pool: pool}
 }
 
-func (m *userStore) Insert(ctx context.Context, email, password string) error {
-	hash, err := argon2id.CreateHash(password, argon2id.DefaultParams)
-	if err != nil {
-		return err
-	}
-
-	err = m.db.CreateUser(
+func (m *userStore) Insert(ctx context.Context, email, passwordHash string) error {
+	err := m.db.CreateUser(
 		ctx, db.CreateUserParams{
 			Email:        email,
-			PasswordHash: []byte(hash),
+			PasswordHash: []byte(passwordHash),
 		},
 	)
+
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			if pgErr.Code == "23505" && pgErr.ConstraintName == "users_email_key" {
-				return store.ErrDuplicateEmail
+				return domain.ErrDuplicateEmail
 			}
 		}
 
@@ -48,25 +44,19 @@ func (m *userStore) Insert(ctx context.Context, email, password string) error {
 	return nil
 }
 
-func (m *userStore) Authenticate(ctx context.Context, email, password string) (int64, error) {
+func (m *userStore) GetByEmail(ctx context.Context, email string) (*domain.User, error) {
 	row, err := m.db.GetUserByEmail(ctx, email)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return 0, store.ErrInvalidCredentials
+			return nil, domain.ErrNoUserFound
 		}
-		return 0, err
+		return nil, err
 	}
 
-	match, err := argon2id.ComparePasswordAndHash(password, string(row.PasswordHash))
-	if err != nil {
-		return 0, err
-	}
-
-	if !match {
-		return 0, store.ErrInvalidCredentials
-	}
-
-	return row.ID, nil
+	return &domain.User{
+		ID:           row.ID,
+		PasswordHash: string(row.PasswordHash),
+	}, nil
 }
 
 func (m *userStore) Exists(ctx context.Context, id int64) (bool, error) {

@@ -12,8 +12,8 @@ UPDATE review_words
 DELETE FROM review_words
   WHERE word_id = $1 AND user_id = $2;
 
--- name: GetReviewWordByID :one
-SELECT word_id, wrong_answers FROM review_words
+-- name: GetReviewWrongAnswers :one
+SELECT wrong_answers FROM review_words
   WHERE word_id = $1 AND user_id = $2;
 
 -- name: GetNextReviewWord :one

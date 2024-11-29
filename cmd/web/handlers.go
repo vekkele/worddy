@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/vekkele/worddy/internal/models"
+	"github.com/vekkele/worddy/internal/domain"
 	"github.com/vekkele/worddy/internal/validator"
 	"github.com/vekkele/worddy/ui/view/pages"
 	"github.com/vekkele/worddy/ui/view/partials"
@@ -47,8 +47,8 @@ func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := app.users.Insert(r.Context(), form.Email, form.Password); err != nil {
-		if errors.Is(err, models.ErrDuplicateEmail) {
+	if err := app.users.Register(r.Context(), form.Email, form.Password); err != nil {
+		if errors.Is(err, domain.ErrDuplicateEmail) {
 			form.AddFieldError("email", "Email address is already in use")
 			w.WriteHeader(http.StatusUnprocessableEntity)
 			app.render(w, r, pages.Signup(r, form))
@@ -83,7 +83,7 @@ func (app *application) loginPost(w http.ResponseWriter, r *http.Request) {
 
 	userID, err := app.users.Authenticate(r.Context(), form.Email, form.Password)
 	if err != nil {
-		if errors.Is(err, models.ErrInvalidCredentials) {
+		if errors.Is(err, domain.ErrInvalidCredentials) {
 			form.AddNonFieldError("Invalid email or password")
 			w.WriteHeader(http.StatusUnprocessableEntity)
 			app.render(w, r, pages.Login(r, form))
@@ -152,7 +152,7 @@ func (app *application) wordAddPost(w http.ResponseWriter, r *http.Request) {
 
 	userID := app.authenticatedUserID(r)
 
-	err = app.words.Insert(r.Context(), userID, form.Word, translations)
+	err = app.words.Add(r.Context(), userID, form.Word, translations)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
@@ -163,13 +163,7 @@ func (app *application) wordAddPost(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) review(w http.ResponseWriter, r *http.Request) {
 	userID := app.authenticatedUserID(r)
-	err := app.reviewWords.InitReview(r.Context(), userID)
-	if err != nil {
-		app.serverError(w, r, err)
-		return
-	}
-
-	nextWord, err := app.reviewWords.GetNextReviewWord(r.Context(), userID)
+	nextWord, err := app.words.InitReview(r.Context(), userID)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
@@ -189,7 +183,7 @@ func (app *application) checkWord(w http.ResponseWriter, r *http.Request) {
 
 	userID := app.authenticatedUserID(r)
 
-	correct, translations, err := app.reviewWords.CheckWord(r.Context(), userID, form.WordID, form.Guess)
+	correct, translations, err := app.words.CheckWord(r.Context(), userID, form.WordID, form.Guess)
 	if err != nil {
 		app.serverError(w, r, err)
 		return

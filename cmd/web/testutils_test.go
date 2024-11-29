@@ -13,6 +13,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-playground/form/v4"
+	"github.com/vekkele/worddy/internal/service"
 	"github.com/vekkele/worddy/internal/store/mocks"
 )
 
@@ -20,9 +21,12 @@ func newTestApplication() *application {
 	sessionManager := scs.New()
 	sessionManager.Lifetime = 12 * time.Hour
 
+	userService := service.NewUserService(mocks.NewUserStore())
+	wordService := service.NewWordService(mocks.NewWordStore())
+
 	return &application{
-		users:          &mocks.UserModel{},
-		words:          &mocks.WordModel{},
+		users:          userService,
+		words:          wordService,
 		formDecoder:    form.NewDecoder(),
 		sessionManager: sessionManager,
 		logger:         slog.New(slog.NewTextHandler(io.Discard, nil)),

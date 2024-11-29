@@ -77,24 +77,19 @@ func (q *Queries) GetNextReviewWord(ctx context.Context, userID int64) (GetNextR
 	return i, err
 }
 
-const getReviewWordByID = `-- name: GetReviewWordByID :one
-SELECT word_id, wrong_answers FROM review_words
+const getReviewWrongAnswers = `-- name: GetReviewWrongAnswers :one
+SELECT wrong_answers FROM review_words
   WHERE word_id = $1 AND user_id = $2
 `
 
-type GetReviewWordByIDParams struct {
+type GetReviewWrongAnswersParams struct {
 	WordID int64
 	UserID int64
 }
 
-type GetReviewWordByIDRow struct {
-	WordID       int64
-	WrongAnswers int32
-}
-
-func (q *Queries) GetReviewWordByID(ctx context.Context, arg GetReviewWordByIDParams) (GetReviewWordByIDRow, error) {
-	row := q.db.QueryRow(ctx, getReviewWordByID, arg.WordID, arg.UserID)
-	var i GetReviewWordByIDRow
-	err := row.Scan(&i.WordID, &i.WrongAnswers)
-	return i, err
+func (q *Queries) GetReviewWrongAnswers(ctx context.Context, arg GetReviewWrongAnswersParams) (int32, error) {
+	row := q.db.QueryRow(ctx, getReviewWrongAnswers, arg.WordID, arg.UserID)
+	var wrong_answers int32
+	err := row.Scan(&wrong_answers)
+	return wrong_answers, err
 }
