@@ -19,15 +19,15 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) signup(w http.ResponseWriter, r *http.Request) {
-	app.render(w, r, pages.Signup(r, pages.SignupForm{}))
+	app.render(w, r, pages.SignupPage(r, pages.SignupFormData{}))
 }
 
 func (app *application) login(w http.ResponseWriter, r *http.Request) {
-	app.render(w, r, pages.Login(r, pages.LoginForm{}))
+	app.render(w, r, pages.LoginPage(r, pages.LoginFormData{}))
 }
 
 func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
-	var form pages.SignupForm
+	var form pages.SignupFormData
 
 	err := app.decodePostForm(r, &form)
 	if err != nil {
@@ -43,7 +43,7 @@ func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
 
 	if !form.Valid() {
 		w.WriteHeader(http.StatusUnprocessableEntity)
-		app.render(w, r, pages.Signup(r, form))
+		app.render(w, r, pages.SignupPage(r, form))
 		return
 	}
 
@@ -51,7 +51,7 @@ func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
 		if errors.Is(err, domain.ErrDuplicateEmail) {
 			form.AddFieldError("email", "Email address is already in use")
 			w.WriteHeader(http.StatusUnprocessableEntity)
-			app.render(w, r, pages.Signup(r, form))
+			app.render(w, r, pages.SignupPage(r, form))
 			return
 		}
 
@@ -63,7 +63,7 @@ func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) loginPost(w http.ResponseWriter, r *http.Request) {
-	var form pages.LoginForm
+	var form pages.LoginFormData
 
 	err := app.decodePostForm(r, &form)
 	if err != nil {
@@ -77,7 +77,7 @@ func (app *application) loginPost(w http.ResponseWriter, r *http.Request) {
 
 	if !form.Valid() {
 		w.WriteHeader(http.StatusUnprocessableEntity)
-		app.render(w, r, pages.Login(r, form))
+		app.render(w, r, pages.LoginForm(r, form))
 		return
 	}
 
@@ -86,7 +86,7 @@ func (app *application) loginPost(w http.ResponseWriter, r *http.Request) {
 		if errors.Is(err, domain.ErrInvalidCredentials) {
 			form.AddNonFieldError("Invalid email or password")
 			w.WriteHeader(http.StatusUnprocessableEntity)
-			app.render(w, r, pages.Login(r, form))
+			app.render(w, r, pages.LoginForm(r, form))
 			return
 		}
 
