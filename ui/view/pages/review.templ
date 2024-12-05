@@ -8,10 +8,14 @@ import (
 	"github.com/vekkele/worddy/internal/domain"
 	"github.com/vekkele/worddy/ui/view/layouts"
 	"github.com/vekkele/worddy/ui/view/partials"
+	"github.com/vekkele/worddy/ui/view/partials/icons"
 )
 
 templ Review(r *http.Request, word domain.ReviewWord) {
 	@layouts.Page("Review") {
+		<a href="/dashboard" hx-boost="true" class="absolute text-black transition-colors hover:text-white top-5 left-5">
+			@icons.Home(icons.NewIconProps("32px"))
+		</a>
 		<main hx-headers={ fmt.Sprintf(`{"X-CSRF-Token": "%s"}`, nosurf.Token(r)) } class="h-full">
 			@partials.ReviewWordSection(partials.ReviewWordSectionProps{Word: word})
 			<section class="h-[50vh] flex py-10 flex-col items-center justify-start">
