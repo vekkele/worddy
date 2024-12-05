@@ -8,36 +8,40 @@ import (
 	"net/http"
 )
 
-type WordAddForm struct {
+type WordAddFormData struct {
 	Word                string `form:"word"`
 	Translations        string `form:"translations"`
 	validator.Validator `form:"-"`
 }
 
-templ WordAdd(r *http.Request, form WordAddForm) {
+templ WordAddForm(r *http.Request, form WordAddFormData) {
+	<form class="flex flex-col gap-4 max-w-96" hx-post="/word/add" hx-swap="outerHTML">
+		<input type="hidden" name="csrf_token" value={ nosurf.Token(r) }/>
+		@partials.TextInput(partials.TextInputProps{
+			Label:       "Word",
+			Name:        "word",
+			Placeholder: "Enter word here",
+			Value:       form.Word,
+			Error:       form.FieldErrors["word"],
+		})
+		@partials.TextInput(partials.TextInputProps{
+			Name:        "translations",
+			Label:       "Translations",
+			Placeholder: "Translations comma-separated",
+			Value:       form.Translations,
+			Error:       form.FieldErrors["translations"],
+		})
+		<section class="flex gap-4">
+			<a href="/dashboard" hx-boost="true" class="btn">Cancel</a>
+			<button class="btn">Save</button>
+		</section>
+	</form>
+}
+
+templ WordAdd(r *http.Request, form WordAddFormData) {
 	@layouts.Page("New Word") {
 		<main class="px-12 py-6">
-			<form class="flex flex-col gap-4 max-w-96" hx-post="/word/add">
-				<input type="hidden" name="csrf_token" value={ nosurf.Token(r) }/>
-				@partials.TextInput(partials.TextInputProps{
-					Label:       "Word",
-					Name:        "word",
-					Placeholder: "Enter word here",
-					Value:       form.Word,
-					Error:       form.FieldErrors["word"],
-				})
-				@partials.TextInput(partials.TextInputProps{
-					Name:        "translations",
-					Label:       "Translations",
-					Placeholder: "Translations comma-separated",
-					Value:       form.Translations,
-					Error:       form.FieldErrors["translations"],
-				})
-				<section class="flex gap-4">
-					<a href="/dashboard" class="btn">Cancel</a>
-					<button class="btn">Save</button>
-				</section>
-			</form>
+			@WordAddForm(r, form)
 		</main>
 	}
 }

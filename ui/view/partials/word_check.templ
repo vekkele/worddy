@@ -71,8 +71,6 @@ type WordCheckResultProps struct {
 	Translations []string
 }
 
-var helloHandle = templ.NewOnceHandle()
-
 templ WordCheckResult(p WordCheckResultProps) {
 	@CheckForm(p.CheckFormProps)
 	<section id="info-section" hx-swap-oob="true" class="flex flex-col items-center">

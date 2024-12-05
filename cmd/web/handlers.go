@@ -132,11 +132,11 @@ func (app *application) dashboard(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) wordAdd(w http.ResponseWriter, r *http.Request) {
-	app.render(w, r, pages.WordAdd(r, pages.WordAddForm{}))
+	app.render(w, r, pages.WordAdd(r, pages.WordAddFormData{}))
 }
 
 func (app *application) wordAddPost(w http.ResponseWriter, r *http.Request) {
-	var form pages.WordAddForm
+	var form pages.WordAddFormData
 
 	err := app.decodePostForm(r, &form)
 	if err != nil {
@@ -151,7 +151,7 @@ func (app *application) wordAddPost(w http.ResponseWriter, r *http.Request) {
 
 	if !form.Valid() {
 		w.WriteHeader(http.StatusUnprocessableEntity)
-		app.render(w, r, pages.WordAdd(r, form))
+		app.render(w, r, pages.WordAddForm(r, form))
 		return
 	}
 
