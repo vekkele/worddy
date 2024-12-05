@@ -12,7 +12,9 @@ import (
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	if app.isAuthenticated(r) {
-		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+		w.Header().Set("HX-Location", "/dashboard")
+		w.WriteHeader(http.StatusSeeOther)
+		return
 	}
 
 	app.render(w, r, pages.Home(r, "Home"))
@@ -59,7 +61,8 @@ func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+	w.Header().Set("HX-Location", "/user/login")
+	w.WriteHeader(http.StatusSeeOther)
 }
 
 func (app *application) loginPost(w http.ResponseWriter, r *http.Request) {
@@ -101,7 +104,8 @@ func (app *application) loginPost(w http.ResponseWriter, r *http.Request) {
 
 	app.sessionManager.Put(r.Context(), "authenticatedUserID", userID)
 
-	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+	w.Header().Set("HX-Location", "/dashboard")
+	w.WriteHeader(http.StatusSeeOther)
 }
 
 func (app *application) logoutPost(w http.ResponseWriter, r *http.Request) {
@@ -112,7 +116,8 @@ func (app *application) logoutPost(w http.ResponseWriter, r *http.Request) {
 
 	app.sessionManager.Remove(r.Context(), "authenticatedUserID")
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	w.Header().Set("HX-Redirect", "/")
+	w.WriteHeader(http.StatusSeeOther)
 }
 
 func (app *application) dashboard(w http.ResponseWriter, r *http.Request) {
@@ -158,7 +163,8 @@ func (app *application) wordAddPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+	w.Header().Set("HX-Location", "/dashboard")
+	w.WriteHeader(http.StatusSeeOther)
 }
 
 func (app *application) review(w http.ResponseWriter, r *http.Request) {

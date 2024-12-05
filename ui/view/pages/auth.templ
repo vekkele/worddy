@@ -9,7 +9,7 @@ import (
 )
 
 templ authForm(r *http.Request, action string) {
-	<form class="flex flex-col flex-1 max-w-sm gap-6" hx-post={ action } hx-swap="outerHTML" hx-target-error="this">
+	<form class="flex flex-col flex-1 max-w-sm gap-6" hx-post={ action } hx-swap="outerHTML">
 		<input type="hidden" name="csrf_token" value={ nosurf.Token(r) }/>
 		{ children... }
 	</form>
