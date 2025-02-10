@@ -12,8 +12,7 @@ import (
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	if app.isAuthenticated(r) {
-		w.Header().Set("HX-Location", "/dashboard")
-		w.WriteHeader(http.StatusSeeOther)
+		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 		return
 	}
 
