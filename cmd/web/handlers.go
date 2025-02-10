@@ -20,10 +20,20 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) signup(w http.ResponseWriter, r *http.Request) {
+	if app.isAuthenticated(r) {
+		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+		return
+	}
+
 	app.render(w, r, pages.SignupPage(r, pages.SignupFormData{}))
 }
 
 func (app *application) login(w http.ResponseWriter, r *http.Request) {
+	if app.isAuthenticated(r) {
+		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+		return
+	}
+
 	app.render(w, r, pages.LoginPage(r, pages.LoginFormData{}))
 }
 
