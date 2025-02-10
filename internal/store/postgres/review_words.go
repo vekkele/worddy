@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"errors"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/vekkele/worddy/internal/domain"
@@ -19,6 +20,10 @@ func (m *wordStore) InitReview(ctx context.Context, userID int64) error {
 
 	words, err := qtx.GetUserReviewWords(ctx, userID)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return domain.ErrNoWordsToReview
+		}
+
 		return err
 	}
 
@@ -39,6 +44,10 @@ func (m *wordStore) InitReview(ctx context.Context, userID int64) error {
 func (s *wordStore) GetNextReviewWord(ctx context.Context, userID int64) (domain.ReviewWord, error) {
 	row, err := s.db.GetNextReviewWord(ctx, userID)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return domain.ReviewWord{}, domain.ErrNoWordsToReview
+		}
+
 		return domain.ReviewWord{}, err
 	}
 

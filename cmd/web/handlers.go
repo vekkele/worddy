@@ -180,6 +180,11 @@ func (app *application) review(w http.ResponseWriter, r *http.Request) {
 	userID := app.authenticatedUserID(r)
 	nextWord, err := app.words.InitReview(r.Context(), userID)
 	if err != nil {
+		if errors.Is(err, domain.ErrNoWordsToReview) {
+			http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+			return
+		}
+
 		app.serverError(w, r, err)
 		return
 	}
