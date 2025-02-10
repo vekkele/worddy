@@ -54,7 +54,7 @@ func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
 
 	if !form.Valid() {
 		w.WriteHeader(http.StatusUnprocessableEntity)
-		app.render(w, r, pages.SignupPage(r, form))
+		app.render(w, r, pages.SignupForm(r, form))
 		return
 	}
 
@@ -62,7 +62,7 @@ func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
 		if errors.Is(err, domain.ErrDuplicateEmail) {
 			form.AddFieldError("email", "Email address is already in use")
 			w.WriteHeader(http.StatusUnprocessableEntity)
-			app.render(w, r, pages.SignupPage(r, form))
+			app.render(w, r, pages.SignupForm(r, form))
 			return
 		}
 
