@@ -1,0 +1,15 @@
+package partials
+
+templ ToastError(message string) {
+	<style type="text/css">
+		@keyframes disappear {
+			to {
+				opacity: 0;
+				z-index: -1;
+			}
+		}
+	</style>
+	<div id="toast" class="fixed px-4 py-3 rounded bottom-4 left-4 text-neutral-900 bg-red-300 animate-[0.5s_linear_5s_disappear_forwards]">
+		{ message }
+	</div>
+}

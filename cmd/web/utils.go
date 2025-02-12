@@ -8,11 +8,12 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/go-playground/form/v4"
+	"github.com/vekkele/worddy/ui/view/partials"
 )
 
 func (app *application) render(w http.ResponseWriter, r *http.Request, component templ.Component) {
 	if err := component.Render(r.Context(), w); err != nil {
-		app.serverError(w, r, err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }
 
@@ -36,8 +37,10 @@ func (app *application) decodePostForm(r *http.Request, dst any) error {
 	return nil
 }
 
-func (app *application) clientError(w http.ResponseWriter, status int) {
-	http.Error(w, http.StatusText(status), status)
+func (app *application) renderError(w http.ResponseWriter, r *http.Request, message string) {
+	w.Header().Set("HX-Retarget", "#toast-section")
+	w.Header().Set("HX-Reswap", "innerHTML")
+	app.render(w, r, partials.ToastError(message))
 }
 
 func (app *application) serverError(w http.ResponseWriter, r *http.Request, err error) {
@@ -47,7 +50,7 @@ func (app *application) serverError(w http.ResponseWriter, r *http.Request, err 
 
 	app.logger.Error(err.Error(), "method", method, "uri", uri, "trace", trace)
 
-	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	app.renderError(w, r, "Something went wrong. Please try again")
 }
 
 func (app *application) authenticatedUserID(r *http.Request) int64 {

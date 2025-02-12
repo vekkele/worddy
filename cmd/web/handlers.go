@@ -42,7 +42,7 @@ func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
 
 	err := app.decodePostForm(r, &form)
 	if err != nil {
-		app.clientError(w, http.StatusBadRequest)
+		app.renderError(w, r, "Failed to process form")
 		return
 	}
 
@@ -79,7 +79,7 @@ func (app *application) loginPost(w http.ResponseWriter, r *http.Request) {
 
 	err := app.decodePostForm(r, &form)
 	if err != nil {
-		app.clientError(w, http.StatusBadRequest)
+		app.renderError(w, r, "Failed to process form")
 		return
 	}
 
@@ -149,7 +149,7 @@ func (app *application) wordAddPost(w http.ResponseWriter, r *http.Request) {
 
 	err := app.decodePostForm(r, &form)
 	if err != nil {
-		app.clientError(w, http.StatusUnprocessableEntity)
+		app.renderError(w, r, "Failed to process form")
 		return
 	}
 
@@ -197,7 +197,7 @@ func (app *application) checkWord(w http.ResponseWriter, r *http.Request) {
 
 	err := app.decodePostForm(r, &form)
 	if err != nil {
-		app.clientError(w, http.StatusUnprocessableEntity)
+		app.renderError(w, r, "Failed to process form")
 		return
 	}
 
