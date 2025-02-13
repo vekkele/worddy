@@ -137,6 +137,10 @@ func (app *application) logoutPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) dashboard(w http.ResponseWriter, r *http.Request) {
+	app.render(w, r, pages.Dashboard(r))
+}
+
+func (app *application) wordsTable(w http.ResponseWriter, r *http.Request) {
 	userID := app.authenticatedUserID(r)
 	words, err := app.words.GetAll(r.Context(), userID)
 	if err != nil {
@@ -144,7 +148,7 @@ func (app *application) dashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.render(w, r, pages.Dashboard(r, words))
+	app.render(w, r, partials.WordsTable(words))
 }
 
 func (app *application) wordAdd(w http.ResponseWriter, r *http.Request) {
