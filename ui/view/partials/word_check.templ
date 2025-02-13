@@ -73,9 +73,9 @@ type WordCheckResultProps struct {
 
 templ WordCheckResult(p WordCheckResultProps) {
 	@CheckForm(p.CheckFormProps)
-	<section id="info-section" hx-swap-oob="true" class="flex flex-col items-center">
-		<button id="info-button" class="btn">Show Info</button>
-		<section id="info-message" class="invisible px-6 py-4 mt-3 rounded-lg bg-slate-800">
+	<section x-data="{ open: false }" id="info-section" hx-swap-oob="true" class="flex flex-col items-center">
+		<button @click="open = !open" class="btn">Show Info</button>
+		<section x-show="open" class="px-6 py-4 mt-3 rounded-lg bg-slate-800">
 			<h2 class="mb-2 text-xl font-bold">Translations</h2>
 			<section>
 				for _, translation := range p.Translations {
@@ -84,18 +84,4 @@ templ WordCheckResult(p WordCheckResultProps) {
 			</section>
 		</section>
 	</section>
-	<script id="info-script" hx-swap-oob="true">
-		(function() {
-			const button = document.getElementById('info-button')
-			const info = document.getElementById('info-message')
-
-			function toggle() {
-				info.classList.toggle("invisible");
-				info.classList.toggle("visible");
-			}
-
-			button.removeEventListener("click", toggle);
-			button.addEventListener("click", toggle);
-		})()
-	</script>
 }
