@@ -70,7 +70,18 @@ func (app *application) signupPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("HX-Location", "/user/login")
+	userID, err := app.users.Authenticate(r.Context(), form.Email, form.Password)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	if err := app.saveSession(r, userID); err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	w.Header().Set("HX-Location", "/dashboard")
 	w.WriteHeader(http.StatusSeeOther)
 }
 
