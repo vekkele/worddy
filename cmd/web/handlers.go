@@ -106,24 +106,20 @@ func (app *application) loginPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := app.sessionManager.RenewToken(r.Context()); err != nil {
+	if err := app.saveSession(r, userID); err != nil {
 		app.serverError(w, r, err)
 		return
 	}
-
-	app.sessionManager.Put(r.Context(), "authenticatedUserID", userID)
 
 	w.Header().Set("HX-Location", "/dashboard")
 	w.WriteHeader(http.StatusSeeOther)
 }
 
 func (app *application) logoutPost(w http.ResponseWriter, r *http.Request) {
-	if err := app.sessionManager.RenewToken(r.Context()); err != nil {
+	if err := app.clearSession(r); err != nil {
 		app.serverError(w, r, err)
 		return
 	}
-
-	app.sessionManager.Remove(r.Context(), "authenticatedUserID")
 
 	w.Header().Set("HX-Redirect", "/")
 	w.WriteHeader(http.StatusSeeOther)

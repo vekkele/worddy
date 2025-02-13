@@ -57,6 +57,24 @@ func (app *application) authenticatedUserID(r *http.Request) int64 {
 	return app.sessionManager.GetInt64(r.Context(), "authenticatedUserID")
 }
 
+func (app *application) saveSession(r *http.Request, userID int64) error {
+	if err := app.sessionManager.RenewToken(r.Context()); err != nil {
+		return err
+	}
+
+	app.sessionManager.Put(r.Context(), "authenticatedUserID", userID)
+	return nil
+}
+
+func (app *application) clearSession(r *http.Request) error {
+	if err := app.sessionManager.RenewToken(r.Context()); err != nil {
+		return err
+	}
+
+	app.sessionManager.Remove(r.Context(), "authenticatedUserID")
+	return nil
+}
+
 func (app *application) isAuthenticated(r *http.Request) bool {
 	isAuthenticated, ok := r.Context().Value(isAuthenticatedContextKey).(bool)
 	if !ok {
