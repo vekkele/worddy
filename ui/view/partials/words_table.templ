@@ -2,7 +2,6 @@ package partials
 
 import (
 	"github.com/vekkele/worddy/internal/domain"
-	"github.com/vekkele/worddy/internal/utils"
 	"strconv"
 	"strings"
 )
@@ -27,7 +26,9 @@ templ WordsTable(words []domain.Word) {
 						<td class="px-2 py-1">{ strings.Join(w.Translations, ", ") }</td>
 						<td class="px-2 py-1">{ string(w.StageName()) }</td>
 						<td class="px-2 py-1">{ strconv.Itoa(int(w.StageLevel)) }</td>
-						<td class="px-2 py-1">{ utils.HumanDate(w.NextReview) }</td>
+						<td class="px-2 py-1">
+							@HumanDate(w.NextReview)
+						</td>
 					</tr>
 				}
 			</tbody>

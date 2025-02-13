@@ -1,0 +1,13 @@
+package partials
+
+import (
+	"fmt"
+	"time"
+)
+
+templ HumanDate(time time.Time) {
+	<span
+		x-data={ fmt.Sprintf("{ date: %d }", time.UTC().UnixMilli()) }
+		x-text="new Date(date).toLocaleString('ru', {dateStyle: 'short', timeStyle: 'short'})"
+	></span>
+}
