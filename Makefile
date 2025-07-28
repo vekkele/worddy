@@ -38,6 +38,9 @@ db_up:
 db_down:
 	goose -dir internal/store/postgres/migrations postgres $(WORDDY_DB_DSN) down
 
+db_connect:
+	docker exec -it worddy_db psql -d $(WORDDY_DB_DSN)
+
 cover:
 	go test -coverprofile=./tmp/coverage.out ./...
 	go tool cover -html=./tmp/coverage.out
