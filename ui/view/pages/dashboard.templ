@@ -6,14 +6,28 @@ import (
 	"net/http"
 )
 
-templ Dashboard(r *http.Request) {
+templ Dashboard(r *http.Request, reviewCount int) {
 	@layouts.Page("Dashboard") {
 		@partials.Header(r, true)
 		<main class="flex flex-col items-start gap-10 px-5 py-6 md:px-12" hx-boost="true">
 			<section class="flex flex-col items-start justify-between w-full gap-10 md:flex-row">
 				<section class="flex gap-4">
 					<a href="/word/add" class="btn">New Word</a>
-					<a href="/review" class="btn">Review</a>
+					<a
+						href="/review"
+						class={ "flex gap-2 btn", templ.KV("pointer-events-none", reviewCount == 0) }
+						disabled?={ reviewCount == 0 }
+					>
+						<span>Review</span>
+						<div
+							class={
+								"flex items-center justify-center px-3 text-sm bg-blue-400 rounded-full text-slate-200",
+								templ.KV("opacity-60", reviewCount == 0),
+							}
+						>
+							{ reviewCount }
+						</div>
+					</a>
 				</section>
 				<div
 					hx-get="/review/forecast"

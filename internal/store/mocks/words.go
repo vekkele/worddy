@@ -79,3 +79,7 @@ func (m *wordStore) UpdateWordLevel(ctx context.Context, userID int64, wordID in
 func (m *wordStore) GetReviewsCountInRange(ctx context.Context, userID int64, start time.Time, end time.Time) ([]domain.ReviewsAtTime, error) {
 	return nil, nil
 }
+
+func (m *wordStore) GetUserReviewCount(ctx context.Context, userID int64) (int, error) {
+	return 0, nil
+}

@@ -26,4 +26,6 @@ type WordStore interface {
 	DeleteReviewWord(ctx context.Context, userID, wordID int64) error
 
 	GetReviewsCountInRange(ctx context.Context, userID int64, start time.Time, end time.Time) ([]domain.ReviewsAtTime, error)
+
+	GetUserReviewCount(ctx context.Context, userID int64) (int, error)
 }

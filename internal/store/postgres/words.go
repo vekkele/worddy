@@ -135,3 +135,9 @@ func (s *wordStore) GetReviewsCountInRange(ctx context.Context, userID int64, st
 
 	return reviews, nil
 }
+
+func (s *wordStore) GetUserReviewCount(ctx context.Context, userID int64) (int, error) {
+	count, err := s.db.GetUserReviewWordsCount(ctx, userID)
+
+	return int(count), err
+}

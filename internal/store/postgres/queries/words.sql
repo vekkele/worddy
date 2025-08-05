@@ -34,6 +34,11 @@ JOIN stages s ON w.stage_id = s.id
 WHERE w.user_id = $1 AND w.next_review <= now()
 GROUP BY w.id, s.level;
 
+-- name: GetUserReviewWordsCount :one
+SELECT count(w.id)
+FROM words w
+WHERE w.user_id = $1 AND w.next_review <= now();
+
 -- name: GetUserReviewsCountInRange :many
 SELECT count(id), next_review
 FROM words

@@ -15,6 +15,7 @@ type WordService interface {
 	InitReview(ctx context.Context, userID int64) (domain.ReviewWord, error)
 	CheckWord(ctx context.Context, userID, wordID int64, guess string) (bool, []string, error)
 	GetReviewForecast(ctx context.Context, userID int64, timeZone string) ([]domain.DayForecast, error)
+	GetReviewCount(ctx context.Context, userID int64) (int, error)
 }
 
 type wordService struct {
@@ -31,6 +32,10 @@ func (s *wordService) Add(ctx context.Context, userID int64, word string, transl
 
 func (s *wordService) GetAll(ctx context.Context, userID int64) ([]domain.Word, error) {
 	return s.store.GetAll(ctx, userID)
+}
+
+func (s *wordService) GetReviewCount(ctx context.Context, userID int64) (int, error) {
+	return s.store.GetUserReviewCount(ctx, userID)
 }
 
 func (s *wordService) InitReview(ctx context.Context, userID int64) (domain.ReviewWord, error) {

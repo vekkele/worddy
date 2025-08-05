@@ -111,6 +111,19 @@ func (q *Queries) GetUserReviewWords(ctx context.Context, userID int64) ([]GetUs
 	return items, nil
 }
 
+const getUserReviewWordsCount = `-- name: GetUserReviewWordsCount :one
+SELECT count(w.id)
+FROM words w
+WHERE w.user_id = $1 AND w.next_review <= now()
+`
+
+func (q *Queries) GetUserReviewWordsCount(ctx context.Context, userID int64) (int64, error) {
+	row := q.db.QueryRow(ctx, getUserReviewWordsCount, userID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const getUserReviewsCountInRange = `-- name: GetUserReviewsCountInRange :many
 SELECT count(id), next_review
 FROM words
