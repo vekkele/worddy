@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"time"
 
 	"github.com/vekkele/worddy/internal/domain"
 )
@@ -23,4 +24,6 @@ type WordStore interface {
 	CommitWrongAnswer(ctx context.Context, userID, wordID int64) error
 	GetWrongAnswers(ctx context.Context, userID, wordID int64) (int32, error)
 	DeleteReviewWord(ctx context.Context, userID, wordID int64) error
+
+	GetReviewsCountInRange(ctx context.Context, userID int64, start time.Time, end time.Time) ([]domain.ReviewsAtTime, error)
 }

@@ -9,9 +9,19 @@ import (
 templ Dashboard(r *http.Request) {
 	@layouts.Page("Dashboard") {
 		@partials.Header(r, true)
-		<main class="flex flex-col items-start gap-6 px-12 py-6" hx-boost="true">
-			<a href="/word/add" class="btn">New Word</a>
-			<a href="/review" class="btn">Review</a>
+		<main class="flex flex-col items-start gap-10 px-5 py-6 md:px-12" hx-boost="true">
+			<section class="flex flex-col items-start justify-between w-full gap-10 md:flex-row">
+				<section class="flex gap-4">
+					<a href="/word/add" class="btn">New Word</a>
+					<a href="/review" class="btn">Review</a>
+				</section>
+				<div
+					hx-get="/review/forecast"
+					hx-trigger="load"
+					hx-swap="outerHTML"
+					hx-vals="js:{tz: Intl.DateTimeFormat().resolvedOptions().timeZone}"
+				></div>
+			</section>
 			<div hx-get="/word/table" hx-trigger="load" hx-swap="outerHTML"></div>
 		</main>
 	}

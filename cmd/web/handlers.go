@@ -230,3 +230,15 @@ func (app *application) checkWord(w http.ResponseWriter, r *http.Request) {
 		Translations: translations,
 	}))
 }
+
+func (app *application) reviewForecast(w http.ResponseWriter, r *http.Request) {
+	tz := r.URL.Query().Get("tz")
+	userId := app.authenticatedUserID(r)
+
+	forecast, err := app.words.GetReviewForecast(r.Context(), userId, tz)
+	if err != nil {
+		app.serverError(w, r, err)
+	}
+
+	app.render(w, r, partials.ReviewForecast(forecast))
+}

@@ -34,6 +34,13 @@ JOIN stages s ON w.stage_id = s.id
 WHERE w.user_id = $1 AND w.next_review <= now()
 GROUP BY w.id, s.level;
 
+-- name: GetUserReviewsCountInRange :many
+SELECT count(id), next_review
+FROM words
+WHERE user_id = $1 AND next_review > $2 AND next_review < $3
+GROUP BY next_review
+ORDER BY next_review ASC;
+
 -- name: UpdateWordStage :exec
 UPDATE words
 SET stage_id = $1, next_review = $2

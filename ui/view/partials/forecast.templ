@@ -1,0 +1,57 @@
+package partials
+
+import (
+	"fmt"
+	"github.com/vekkele/worddy/internal/domain"
+)
+
+templ ReviewForecast(forecast []domain.DayForecast) {
+	<article
+		class={
+			"self-stretch max-w-full px-5 py-3 rounded-md min-w-max grow bg-slate-200",
+			"md:ml-12 md:max-w-md dark:bg-slate-800",
+		}
+	>
+		<h2 class="text-2xl font-bold">Review Forecast</h2>
+		<div class="flex flex-col gap-2">
+			for _, dayForecast := range forecast {
+				@DayForecast(dayForecast)
+			}
+		</div>
+	</article>
+}
+
+templ DayForecast(forecast domain.DayForecast) {
+	<article className="rounded-md bg-slate-300 px-4 py-2 dark:bg-slate-700">
+		<h4
+			class={
+				"flex w-full items-center justify-between text-lg capitalize",
+				templ.KV("opacity-60", forecast.Empty()),
+			}
+		>
+			<span>{ forecast.Weekday }</span>
+		</h4>
+		if !forecast.Empty() {
+			<div class="border-t border-neutral-600">
+				for _, hour := range forecast.Hourly {
+					<div class="flex items-center">
+						<span
+							x-data={ fmt.Sprintf("{ date: %d }", hour.Time.UTC().UnixMilli()) }
+							x-text="new Date(date).toLocaleString('ru', {timeStyle: 'short'})"
+						></span>
+						<span class="grow"></span>
+						<span class="flex items-stretch text-base">
+							<span
+								class={ "mr-2 border-r border-neutral-600 pr-2 py-1" }
+							>
+								<span class="text-neutral-500">+</span>
+								{ hour.Count }
+							</span>
+							<span class="inline-flex items-center w-8">{ hour.CumulativeCount }</span>
+						</span>
+					</div>
+				}
+			</div>
+		}
+	</article>
+}

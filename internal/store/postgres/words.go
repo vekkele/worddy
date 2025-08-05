@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -107,4 +108,30 @@ func (m *wordStore) UpdateWordLevel(ctx context.Context, userID, wordID int64, l
 			Valid: true,
 		},
 	})
+}
+
+func (s *wordStore) GetReviewsCountInRange(ctx context.Context, userID int64, start time.Time, end time.Time) ([]domain.ReviewsAtTime, error) {
+	rows, err := s.db.GetUserReviewsCountInRange(ctx, db.GetUserReviewsCountInRangeParams{
+		UserID:       userID,
+		NextReview:   pgtype.Timestamptz{Time: start, Valid: true},
+		NextReview_2: pgtype.Timestamptz{Time: end, Valid: true},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(rows) < 1 {
+		return []domain.ReviewsAtTime{}, nil
+	}
+
+	var reviews []domain.ReviewsAtTime
+	for _, row := range rows {
+		reviews = append(reviews, domain.ReviewsAtTime{
+			Count: int(row.Count),
+			Time:  row.NextReview.Time,
+		})
+	}
+
+	return reviews, nil
 }

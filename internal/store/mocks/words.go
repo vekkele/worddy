@@ -3,6 +3,7 @@ package mocks
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/vekkele/worddy/internal/domain"
 	"github.com/vekkele/worddy/internal/store"
@@ -73,4 +74,8 @@ func (m *wordStore) InitReview(ctx context.Context, userID int64) error {
 
 func (m *wordStore) UpdateWordLevel(ctx context.Context, userID int64, wordID int64, level int32) error {
 	return nil
+}
+
+func (m *wordStore) GetReviewsCountInRange(ctx context.Context, userID int64, start time.Time, end time.Time) ([]domain.ReviewsAtTime, error) {
+	return nil, nil
 }
