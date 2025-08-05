@@ -14,14 +14,14 @@ templ ReviewForecast(forecast []domain.DayForecast) {
 	>
 		<h2 class="text-2xl font-bold">Review Forecast</h2>
 		<div class="flex flex-col gap-2">
-			for _, dayForecast := range forecast {
-				@DayForecast(dayForecast)
+			for i, dayForecast := range forecast {
+				@DayForecast(dayForecast, i)
 			}
 		</div>
 	</article>
 }
 
-templ DayForecast(forecast domain.DayForecast) {
+templ DayForecast(forecast domain.DayForecast, index int) {
 	<article className="rounded-md bg-slate-300 px-4 py-2 dark:bg-slate-700">
 		<h4
 			class={
@@ -29,7 +29,13 @@ templ DayForecast(forecast domain.DayForecast) {
 				templ.KV("opacity-60", forecast.Empty()),
 			}
 		>
-			<span>{ forecast.Weekday }</span>
+			<span>
+				if index == 0 {
+					Today
+				} else {
+					{ forecast.Weekday }
+				}
+			</span>
 		</h4>
 		if !forecast.Empty() {
 			<div class="border-t border-neutral-600">
