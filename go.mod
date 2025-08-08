@@ -1,8 +1,6 @@
 module github.com/vekkele/worddy
 
-go 1.23.0
-
-toolchain go1.24.2
+go 1.24.6
 
 require (
 	github.com/PuerkitoBio/goquery v1.9.2
