@@ -26,7 +26,7 @@ build-prod: build-css
 	GOOS=linux GOARCH=amd64 go build -o ./bin/main ./cmd/web
 
 .PHONY: install
-install: tailwind_install
+install: tailwindcss
 	go install github.com/air-verse/air@latest
 	go install github.com/a-h/templ/cmd/templ@latest
 	go install github.com/pressly/goose/v3/cmd/goose@latest
