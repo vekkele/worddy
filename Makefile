@@ -20,8 +20,12 @@ init: deps install
 build-css: tailwindcss
 	./tailwindcss -i ./ui/tailwind/main.css -o ./ui/static/css/app.css --minify
 
+.PHONY: build-templ
+build-templ:
+	templ generate
+
 .PHONY: build-prod
-build-prod: build-css
+build-prod: build-css build-templ
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ./bin/main ./cmd/web
 
 .PHONY: install
