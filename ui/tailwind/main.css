@@ -1,21 +1,37 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@layer components {
-  .btn {
-    @apply px-5 py-2 text-white transition-colors bg-blue-600 rounded-lg;
-    @apply hover:bg-blue-700;
+@utility btn {
+  padding: --spacing(2) --spacing(5);
+  color: var(--color-white);
+  transition: color;
+  background-color: var(--color-blue-600);
+  border-radius: var(--radius-lg);
+
+  &:hover {
+    @media (hover: hover) {
+      background-color: var(--color-blue-700);
+    }
   }
 
-  .btn:disabled,
-  .btn[disabled] {
-    @apply bg-blue-300;
-    @apply hover:bg-blue-300;
-  }
+  &:disabled,
+  &[disabled] {
+    background-color: var(--color-bg-blue-300);
 
-  .link {
-    @apply text-blue-400;
-    @apply hover:text-blue-500 hover:underline
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-blue-300);
+      }
+    }
+  }
+}
+
+@utility link {
+  color: var(--color-blue-400);
+
+  &:hover {
+    @media (hover: hover) {
+      color: var(--color-blue-500);
+      text-transform: undeline;
+    }
   }
 }
