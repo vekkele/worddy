@@ -1,6 +1,8 @@
 package config
 
 import (
+	"errors"
+	"io/fs"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -17,7 +19,7 @@ type DBConfig struct {
 
 func New() (Config, error) {
 	err := godotenv.Load()
-	if err != nil {
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
 		return Config{}, err
 	}
 
