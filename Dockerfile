@@ -1,5 +1,4 @@
-FROM golang:1.24.6-alpine AS builder
-RUN apk add --no-cache make curl libc6-compat
+FROM golang:1.24.6-bookworm AS builder
 
 ENV CGO_ENABLED=0
 
@@ -17,8 +16,7 @@ RUN make install
 COPY . ./
 RUN make build-prod
 
-FROM alpine:3.20
-RUN apk add --no-cache tzdata
+FROM debian:bookworm-slim
 
 WORKDIR /app
 
