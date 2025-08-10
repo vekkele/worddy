@@ -1,6 +1,6 @@
 FROM golang:1.24.6-alpine AS builder
 
-RUN apk add make curl
+RUN apk add make curl libstdc++ libgcc
 
 ENV CGO_ENABLED=0
 
