@@ -23,7 +23,7 @@ build-css: tailwindcss
 
 .PHONY: build-prod
 build-prod: build-css
-	GOOS=linux GOARCH=amd64 go build -o ./bin/main ./cmd/web
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ./bin/main ./cmd/web
 
 .PHONY: install
 install: tailwindcss

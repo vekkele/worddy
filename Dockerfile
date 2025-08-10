@@ -1,5 +1,5 @@
 FROM golang:1.24.6-alpine AS builder
-RUN apk add --no-cache make curl
+RUN apk add --no-cache make curl libc6-compat
 
 ENV CGO_ENABLED=0
 
