@@ -7,7 +7,7 @@ import (
 
 templ Header(r *http.Request, isAuthenticated bool) {
 	<header class="flex flex-row items-center justify-end px-4 py-3">
-		<h3 class="mr-auto text-lg">Worddy</h3>
+		<h3 class="mr-auto text-xl font-semibold">Worddy</h3>
 		if isAuthenticated {
 			<form hx-post="/user/logout">
 				<input type="hidden" name="csrf_token" value={ nosurf.Token(r) }/>
