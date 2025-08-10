@@ -6,8 +6,7 @@ css:
 	./tailwindcss -i ./ui/tailwind/main.css -o ./ui/static/css/app.css --watch
 
 tailwindcss:
-	curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/download/v3.4.17/tailwindcss-$(TAILWINDCSS_OS_ARCH)
-	mv tailwindcss-$(TAILWINDCSS_OS_ARCH) ./tailwindcss
+	curl -fL -o ./tailwindcss https://github.com/tailwindlabs/tailwindcss/releases/download/v3.4.17/tailwindcss-$(TAILWINDCSS_OS_ARCH)
 	chmod a+x ./tailwindcss
 
 .PHONY: deps
