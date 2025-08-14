@@ -16,7 +16,7 @@ func (app *application) routes() http.Handler {
 	r.Handle("/static/*", fs)
 
 	r.Group(func(r chi.Router) {
-		r.Use(app.sessionManager.LoadAndSave, noSurf, app.authenticate)
+		r.Use(app.sessionManager.LoadAndSave, noSurf, app.authenticate, app.readRequestLocale)
 
 		r.Get("/", app.home)
 		r.Get("/user/signup", app.signup)

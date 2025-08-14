@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/justinas/nosurf"
+	"github.com/vekkele/worddy/internal/i18n"
 )
 
 func secureHeaders(next http.Handler) http.Handler {
@@ -92,5 +93,16 @@ func (app *application) requireAuthentication(next http.Handler) http.Handler {
 		w.Header().Add("Cache-Control", "no-store")
 
 		next.ServeHTTP(w, r)
+	})
+}
+
+func (app *application) readRequestLocale(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		accept := r.Header.Get("Accept-Language")
+
+		tr := app.localeService.CreateTranslator(accept)
+		ctx := i18n.WithTranslator(r.Context(), tr)
+
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

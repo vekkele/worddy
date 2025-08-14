@@ -3,6 +3,7 @@ module github.com/vekkele/worddy
 go 1.24.6
 
 require (
+	github.com/BurntSushi/toml v1.5.0
 	github.com/PuerkitoBio/goquery v1.9.2
 	github.com/a-h/templ v0.3.924
 	github.com/alexedwards/argon2id v1.0.0
@@ -13,7 +14,9 @@ require (
 	github.com/jackc/pgx/v5 v5.5.5
 	github.com/joho/godotenv v1.5.1
 	github.com/justinas/nosurf v1.1.1
+	github.com/nicksnyder/go-i18n/v2 v2.6.0
 	github.com/stretchr/testify v1.10.0
+	golang.org/x/text v0.28.0
 )
 
 require (
@@ -25,8 +28,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/crypto v0.37.0 // indirect
 	golang.org/x/net v0.39.0 // indirect
-	golang.org/x/sync v0.13.0 // indirect
+	golang.org/x/sync v0.16.0 // indirect
 	golang.org/x/sys v0.32.0 // indirect
-	golang.org/x/text v0.24.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

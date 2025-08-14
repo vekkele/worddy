@@ -1,0 +1,17 @@
+package i18n
+
+templ T(id string) {
+	{ FromCtx(ctx).T(id) }
+}
+
+templ Td(id string, data M) {
+	{ FromCtx(ctx).Td(id, data) }
+}
+
+templ N(id string, count int) {
+	{ FromCtx(ctx).N(id, count) }
+}
+
+templ Nd(id string, count int, data M) {
+	{ FromCtx(ctx).Nd(id, count, data) }
+}

@@ -10,8 +10,10 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-playground/form/v4"
 	"github.com/vekkele/worddy/internal/config"
+	"github.com/vekkele/worddy/internal/i18n"
 	"github.com/vekkele/worddy/internal/service"
 	"github.com/vekkele/worddy/internal/store/postgres"
+	"golang.org/x/text/language"
 )
 
 type application struct {
@@ -20,6 +22,7 @@ type application struct {
 	formDecoder    *form.Decoder
 	logger         *slog.Logger
 	sessionManager *scs.SessionManager
+	localeService  *i18n.LocaleService
 }
 
 func main() {
@@ -32,6 +35,12 @@ func main() {
 	}
 
 	pool, err := postgres.OpenDB(config.DB.DSN)
+	if err != nil {
+		logger.Error(err.Error())
+		os.Exit(1)
+	}
+
+	localeService, err := i18n.NewService(language.English)
 	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)
@@ -54,6 +63,7 @@ func main() {
 		formDecoder:    form.NewDecoder(),
 		logger:         logger,
 		sessionManager: sessionManager,
+		localeService:  localeService,
 	}
 
 	err = http.ListenAndServe(":"+config.Port, app.routes())
