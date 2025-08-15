@@ -43,7 +43,7 @@ templ CheckForm(p CheckFormProps) {
 			type="text"
 			name="guess"
 			class={
-				"w-2/5 p-2 text-center border rounded-md border-slate-300 text-neutral-900",
+				"w-2/5 p-2 text-center border rounded-md border-slate-300 bg-white text-neutral-900",
 				checkedInputClass(p.Checked, p.CorrectGuess),
 			}
 			placeholder={ i18n.FromCtx(ctx).T("TranslationsCheckPlaceholder") }
