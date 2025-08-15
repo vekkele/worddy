@@ -19,12 +19,6 @@ templ Review(r *http.Request, word domain.ReviewWord) {
 		<main hx-headers={ fmt.Sprintf(`{"X-CSRF-Token": "%s"}`, nosurf.Token(r)) } class="h-full">
 			@partials.ReviewWordSection(partials.ReviewWordSectionProps{Word: word})
 			<section class="h-[50vh] flex py-10 flex-col items-center justify-start">
-				<section>
-					<h5>Translation:</h5>
-					for _, translation := range word.Translations {
-						<h6>{ translation }</h6>
-					}
-				</section>
 				<section id="info-section"></section>
 			</section>
 		</main>
