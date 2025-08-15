@@ -1,0 +1,190 @@
+[CancelButton]
+hash = "sha1-77dfd2135f4db726c47299bb55be26f7f4525a46"
+other = "Отмена"
+
+[ConfirmPasswordLabel]
+hash = "sha1-4a7c565d4c4430e3bb8fa6c560125d5eb37e7c3d"
+other = "Подтверждение пароля"
+
+[ConfirmPasswordPlaceholder]
+hash = "sha1-198b73ffd1a6d9c83101382c6df255edac0d3625"
+other = "Подтвердите пароль"
+
+[CreatePasswordPlaceholder]
+hash = "sha1-f26d53618388b81e930bedba7904268d9402834c"
+other = "Введите пароль"
+
+[InvalidEmailError]
+hash = "sha1-789ec25c46984d37c7aeb3ca99078b43f1f13262"
+other = "Неверный формат email"
+
+[EmailInUseError]
+hash = "sha1-29da6c4d4f02299337f0e3bdbb15a8b4dacda529"
+other = "Этот email уже занят"
+
+[EmailLabel]
+hash = "sha1-84add5b2952787581cb9a8851eef63d1ec75d22b"
+other = "Email"
+
+[EmailPlaceholder]
+hash = "sha1-8cdbba4325ba3ffd15db3fbae51e0afe79ce3484"
+other = "Введите email"
+
+[EmptyFieldError]
+hash = "sha1-0aecaa75fde5ffe7bfdc1897d101ea48b7660160"
+other = "Это поле не может быть пустым"
+
+[EnterPasswordPlaceholder]
+hash = "sha1-1378167d526696147e06dc809e7bc906e36fd7d1"
+other = "Введите пароль"
+
+[FieldLengthError]
+few = "Это поле должно содержать как минимум {{.Count}} символа"
+hash = "sha1-5d2cb2cff5d84a1b2bf442abfa56278ef4477267"
+one = "Это поле должно содержать как минимум один символ"
+many = "Это поле должно содержать как минимум {{.Count}} символов"
+other = "Это поле должно содержать как минимум {{.Count}} символов"
+
+[ForecastTitle]
+hash = "sha1-f7d30c910172f8cf971040c96b71c38d9612e531"
+other = "Прогноз повторений"
+
+[FormError]
+hash = "sha1-254aeb958bc856454a6815598be0f38749e4a41f"
+other = "Не удалось обработать форму"
+
+[Friday]
+hash = "sha1-d166e844a3f3f87149cc4f866eb998e9a751c72a"
+other = "Пятница"
+
+[HomePageTitle]
+hash = "sha1-70f8bb9a8a5393ef080507a89e4b98d139000d65"
+other = "Главная"
+
+[InvalidCredentialsError]
+hash = "sha1-c0494cb3595504b9c4455642e3f2ced99208de22"
+other = "Неверный email или пароль"
+
+[Level]
+hash = "sha1-7c7f5d049fad2569721d446c4a811f9bd5da5393"
+other = "Уровень"
+
+[LoginButton]
+hash = "sha1-4e5a2893bdcc7d239c1db72e4c4ffbe4bea73174"
+other = "Войти"
+
+[LoginPageTitle]
+hash = "sha1-4e5a2893bdcc7d239c1db72e4c4ffbe4bea73174"
+other = "Вход"
+
+[LogoutButton]
+hash = "sha1-e43d612e11f1568f2373e719d4c4b08dcecdc7cc"
+other = "Выйти"
+
+[MainTitle]
+hash = "sha1-40b22a8ef12ef109e9c232820947a0770baefc19"
+other = "Worddy - это приложение, которое поможет тебе выучить новые слова"
+
+[MatchPasswordsError]
+hash = "sha1-d69c3b1ac54be7da3666d9937b9c78e7c309d6e8"
+other = "Пароли не совпадают"
+
+[Monday]
+hash = "sha1-932eeb1076c85e522f02e15441fa371e3fd000ac"
+other = "Понедельник"
+
+[NewWordButton]
+hash = "sha1-0e4c6f98678441d9cac4754f2c50c203a4f1a817"
+other = "Новое слово"
+
+[NextReview]
+hash = "sha1-1a8f5b426b3bf2d1902df1a2fb186dbf9c0030c7"
+other = "Следующее повторение"
+
+[NoTranslationsError]
+hash = "sha1-cd201df60f566424d73a85833cecd8f483d1e3b1"
+other = "Введите как минимум один перевод"
+
+[PasswordLabel]
+hash = "sha1-8be3c943b1609fffbfc51aad666d0a04adf83c9d"
+other = "Пароль"
+
+[ReviewButton]
+hash = "sha1-e29a79fe0c349724caeaa1762fa917f5543248ca"
+other = "Повторять"
+
+[Saturday]
+hash = "sha1-17063c506b81a46c2eb7716af50cf19d4ed5a6c6"
+other = "Суббота"
+
+[SaveButton]
+hash = "sha1-efc007a393f66cdb14d57d385822a3d9e36ef873"
+other = "Сохранить"
+
+[ShowInfoButton]
+hash = "sha1-e61b7045b3622f6691283088fc77a6063170a51b"
+other = "Показать информацию"
+
+[SignUpButton]
+hash = "sha1-2ba4023df482d96f0966d6c0de681fd0be189927"
+other = "Регистрация"
+
+[SignUpPageTitle]
+hash = "sha1-2ba4023df482d96f0966d6c0de681fd0be189927"
+other = "Регистрация"
+
+[Stage]
+hash = "sha1-ca6d0e3aaa7d6cc0e9d9fe14eed28587f7ee1133"
+other = "Уровень"
+
+[SubmitButton]
+hash = "sha1-2dacf65959849884a011f36f76a04eebea94c5ea"
+other = "Подтвердить"
+
+[Thursday]
+hash = "sha1-76031ddf92450ba52c1e3945097079807a9065c2"
+other = "Четверг"
+
+[Today]
+hash = "sha1-24345a14377fd821d3932f4e82f6431640955b0b"
+other = "Сегодня"
+
+[TranslationsLabel]
+hash = "sha1-8ad8302d110b05d7e02330dac58628134fdcff02"
+other = "Переводы"
+
+[TranslationsPlaceholder]
+hash = "sha1-0dbb464b78237a83e53c1137055a1df70632d7d8"
+other = "Переводы через запятую"
+
+[Tuesday]
+hash = "sha1-42e43b612a5dfae57ddf5929f0fb945ae83cbf61"
+other = "Вторник"
+
+[Wednesday]
+hash = "sha1-5656b9b79b0316fc611a9c30d2ffac25228b8371"
+other = "Среда"
+
+[Word]
+hash = "sha1-44363ccb8230b892c5ab09c35a02a4ea41ff9976"
+other = "Слово"
+
+[NewWordLabel]
+hash = "sha1-44363ccb8230b892c5ab09c35a02a4ea41ff9976"
+other = "Слово"
+
+[NewWordPlaceholder]
+hash = "sha1-8afbc08451e2cd1618e30c0a10d49e6f4a7cb1ca"
+other = "Введите слово"
+
+[ReviewPageTitle]
+other = "Повторение"
+
+[SavedWordtitle]
+other = "Сохраненные слова"
+
+[Sunday]
+other = "Воскресенье"
+
+[TranslationsCheckPlaceholder]
+other = "Введите один из переводов"

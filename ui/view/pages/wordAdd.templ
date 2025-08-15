@@ -2,6 +2,7 @@ package pages
 
 import (
 	"github.com/justinas/nosurf"
+	"github.com/vekkele/worddy/internal/i18n"
 	"github.com/vekkele/worddy/internal/validator"
 	"github.com/vekkele/worddy/ui/view/layouts"
 	"github.com/vekkele/worddy/ui/view/partials"
@@ -15,31 +16,36 @@ type WordAddFormData struct {
 }
 
 templ WordAddForm(r *http.Request, form WordAddFormData) {
+	{{ tr := i18n.FromCtx(ctx) }}
 	<form class="flex flex-col gap-4 max-w-96" hx-post="/word/add" hx-swap="outerHTML">
 		<input type="hidden" name="csrf_token" value={ nosurf.Token(r) }/>
 		@partials.TextInput(partials.TextInputProps{
-			Label:       "Word",
+			Label:       tr.T("NewWordLabel"),
 			Name:        "word",
-			Placeholder: "Enter word here",
+			Placeholder: tr.T("NewWordPlaceholder"),
 			Value:       form.Word,
 			Error:       form.FieldErrors["word"],
 		})
 		@partials.TextInput(partials.TextInputProps{
 			Name:        "translations",
-			Label:       "Translations",
-			Placeholder: "Translations comma-separated",
+			Label:       tr.T("TranslationsLabel"),
+			Placeholder: tr.T("TranslationsPlaceholder"),
 			Value:       form.Translations,
 			Error:       form.FieldErrors["translations"],
 		})
 		<section class="flex gap-4">
-			<a href="/dashboard" hx-boost="true" class="btn">Cancel</a>
-			<button class="btn">Save</button>
+			<a href="/dashboard" hx-boost="true" class="btn">
+				@i18n.T("CancelButton")
+			</a>
+			<button class="btn">
+				@i18n.T("SaveButton")
+			</button>
 		</section>
 	</form>
 }
 
 templ WordAdd(r *http.Request, form WordAddFormData) {
-	@layouts.Page("New Word") {
+	@layouts.Page(i18n.FromCtx(ctx).T("Word")) {
 		<main class="px-12 py-6">
 			@WordAddForm(r, form)
 		</main>

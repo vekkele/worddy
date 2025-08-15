@@ -1,6 +1,8 @@
 -include .env
 export
 
+i18n_locales_path = ./internal/i18n/locales
+
 .PHONY: css
 css:
 	./tailwindcss -i ./ui/tailwind/main.css -o ./ui/static/css/app.css --watch
@@ -34,7 +36,24 @@ install: tailwindcss
 	go install github.com/a-h/templ/cmd/templ@latest
 	go install github.com/pressly/goose/v3/cmd/goose@latest
 	go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
-	go install golang.org/x/text/cmd/gotext@latest
+	go install github.com/nicksnyder/go-i18n/v2/goi18n@latest
+
+# Usage: make i18n-new-lang lang=ru
+.PHONY: i18n-new-lang
+i18n-new-lang:
+	cd ${i18n_locales_path} &&\
+	touch translate.$(lang).toml &&\
+	goi18n merge active.en.toml translate.$(lang).toml
+
+.PHONY: i18n-start
+i18n-start:
+	cd ${i18n_locales_path} &&\
+	goi18n merge active.*.toml
+
+.PHONY: i18n-merge
+i18n-merge:
+	cd ${i18n_locales_path} &&\
+	goi18n merge active.*.toml translate.*.toml
 
 .PHONY: db_init
 db_init: 

@@ -2,21 +2,34 @@ package partials
 
 import (
 	"github.com/vekkele/worddy/internal/domain"
+	"github.com/vekkele/worddy/internal/i18n"
 	"strconv"
 	"strings"
 )
 
 templ WordsTable(words []domain.Word) {
 	<div class="flex flex-col gap-4">
-		<h3 class="text-2xl">Saved Words</h3>
+		<h3 class="text-2xl">
+			@i18n.T("SavedWordtitle")
+		</h3>
 		<table>
 			<thead>
 				<tr>
-					<th class="px-2 py-1 text-start">Word</th>
-					<th class="px-2 py-1 text-start">Translations</th>
-					<th class="px-2 py-1 text-start">Stage</th>
-					<th class="px-2 py-1 text-start">Level</th>
-					<th class="px-2 py-1 text-start">Next Review</th>
+					<th class="px-2 py-1 text-start">
+						@i18n.T("Word")
+					</th>
+					<th class="px-2 py-1 text-start">
+						@i18n.T("TranslationsLabel")
+					</th>
+					<th class="px-2 py-1 text-start">
+						@i18n.T("Stage")
+					</th>
+					<th class="px-2 py-1 text-start">
+						@i18n.T("Level")
+					</th>
+					<th class="px-2 py-1 text-start">
+						@i18n.T("NextReview")
+					</th>
 				</tr>
 			</thead>
 			<tbody>

@@ -1,6 +1,7 @@
 package partials
 
 import (
+	"github.com/vekkele/worddy/internal/i18n"
 	"github.com/vekkele/worddy/ui/view/partials/icons"
 	"strconv"
 )
@@ -45,7 +46,7 @@ templ CheckForm(p CheckFormProps) {
 				"w-2/5 p-2 text-center border rounded-md border-slate-300 text-neutral-900",
 				checkedInputClass(p.Checked, p.CorrectGuess),
 			}
-			placeholder="Enter one of translations"
+			placeholder={ i18n.FromCtx(ctx).T("TranslationsCheckPlaceholder") }
 			value={ p.GuessValue }
 			if p.Checked {
 				readonly
@@ -74,9 +75,13 @@ type WordCheckResultProps struct {
 templ WordCheckResult(p WordCheckResultProps) {
 	@CheckForm(p.CheckFormProps)
 	<section x-data="{ open: false }" id="info-section" hx-swap-oob="true" class="flex flex-col items-center">
-		<button @click="open = !open" class="btn">Show Info</button>
+		<button @click="open = !open" class="btn">
+			@i18n.T("ShowInfoButton")
+		</button>
 		<section x-show="open" class="px-6 py-4 mt-3 rounded-lg bg-slate-800">
-			<h2 class="mb-2 text-xl font-bold">Translations</h2>
+			<h2 class="mb-2 text-xl font-bold">
+				@i18n.T("Translations")
+			</h2>
 			<section>
 				for _, translation := range p.Translations {
 					<h4>{ translation }</h4>

@@ -2,6 +2,7 @@ package i18n
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
@@ -63,6 +64,7 @@ func (tr *Translator) localize(id string, plural *int, data M) string {
 
 	msg, err := tr.localizer.Localize(cfg)
 	if err != nil {
+		slog.Warn(err.Error())
 		return id
 	}
 

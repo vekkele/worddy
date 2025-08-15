@@ -1,24 +1,29 @@
 package pages;
 
 import (
+	"github.com/vekkele/worddy/internal/i18n"
 	"github.com/vekkele/worddy/ui/view/layouts"
 	"github.com/vekkele/worddy/ui/view/partials"
 	"net/http"
 )
 
 templ Dashboard(r *http.Request, reviewCount int) {
-	@layouts.Page("Dashboard") {
+	@layouts.Page(i18n.FromCtx(ctx).T("HomePageTitle")) {
 		@partials.Header(r, true)
 		<main class="flex flex-col items-start gap-10 px-5 py-6 md:px-12" hx-boost="true">
 			<section class="flex flex-col items-start justify-between w-full gap-10 md:flex-row">
 				<section class="flex gap-4">
-					<a href="/word/add" class="btn">New Word</a>
+					<a href="/word/add" class="btn">
+						@i18n.T("NewWordButton")
+					</a>
 					<a
 						href="/review"
 						class={ "flex gap-2 btn", templ.KV("pointer-events-none", reviewCount == 0) }
 						disabled?={ reviewCount == 0 }
 					>
-						<span>Review</span>
+						<span>
+							@i18n.T("ReviewButton")
+						</span>
 						<div
 							class={
 								"flex items-center justify-center px-3 text-sm bg-blue-400 rounded-full text-slate-200",

@@ -2,6 +2,7 @@ package pages
 
 import (
 	"github.com/justinas/nosurf"
+	"github.com/vekkele/worddy/internal/i18n"
 	"github.com/vekkele/worddy/internal/validator"
 	"github.com/vekkele/worddy/ui/view/layouts"
 	"github.com/vekkele/worddy/ui/view/partials"
@@ -23,36 +24,41 @@ type SignupFormData struct {
 }
 
 templ SignupForm(r *http.Request, form SignupFormData) {
+	{{ tr := i18n.FromCtx(ctx) }}
 	@authForm(r, "/user/signup") {
 		@partials.TextInput(partials.TextInputProps{
 			Name:        "email",
 			Value:       form.Email,
-			Label:       "Email",
+			Label:       tr.T("EmailLabel"),
 			Type:        "email",
-			Placeholder: "Enter your email",
+			Placeholder: tr.T("EmailPlaceholder"),
 			Error:       form.FieldErrors["email"],
 		})
 		@partials.TextInput(partials.TextInputProps{
 			Name:        "password",
-			Label:       "Password",
+			Label:       tr.T("PasswordLabel"),
 			Type:        "password",
-			Placeholder: "Create a password",
+			Placeholder: tr.T("CreatePasswordPlaceholder"),
 			Error:       form.FieldErrors["password"],
 		})
 		@partials.TextInput(partials.TextInputProps{
 			Name:        "password-confirm",
-			Label:       "Confirm password",
+			Label:       tr.T("ConfirmPasswordLabel"),
 			Type:        "password",
-			Placeholder: "Confirm your password",
+			Placeholder: tr.T("ConfirmPasswordPlaceholder"),
 			Error:       form.FieldErrors["password-confirm"],
 		})
-		<button class="btn">Submit</button>
-		<a href="/user/login" class="self-center link">Login</a>
+		<button class="btn">
+			@i18n.T("SubmitButton")
+		</button>
+		<a href="/user/login" class="self-center link">
+			@i18n.T("LoginButton")
+		</a>
 	}
 }
 
 templ SignupPage(r *http.Request, form SignupFormData) {
-	@layouts.Page("Sign Up") {
+	@layouts.Page(i18n.FromCtx(ctx).T("SignUpPageTitle")) {
 		<main class="flex justify-center px-10 py-16">
 			@SignupForm(r, form)
 		</main>
@@ -66,32 +72,33 @@ type LoginFormData struct {
 }
 
 templ LoginForm(r *http.Request, form LoginFormData) {
+	{{ tr := i18n.FromCtx(ctx) }}
 	@authForm(r, "/user/login") {
 		for _, err := range form.NonFieldErrors {
 			@partials.FormError(err)
 		}
 		@partials.TextInput(partials.TextInputProps{
 			Name:        "email",
-			Label:       "Email",
+			Label:       tr.T("EmailLabel"),
 			Type:        "email",
-			Placeholder: "Enter your email",
+			Placeholder: tr.T("EmailPlaceholder"),
 			Value:       form.Email,
 			Error:       form.FieldErrors["email"],
 		})
 		@partials.TextInput(partials.TextInputProps{
 			Name:        "password",
-			Label:       "Password",
+			Label:       tr.T("PasswordLabel"),
 			Type:        "password",
-			Placeholder: "Enter your password",
+			Placeholder: tr.T("EnterPasswordPlaceholder"),
 			Error:       form.FieldErrors["password"],
 		})
-		<button class="btn">Submit</button>
-		<a href="/user/signup" class="self-center link">Sign Up</a>
+		<button class="btn">{ tr.T("SubmitButton") }</button>
+		<a href="/user/signup" class="self-center link">{ tr.T("SignUpButton") }</a>
 	}
 }
 
 templ LoginPage(r *http.Request, form LoginFormData) {
-	@layouts.Page("Login") {
+	@layouts.Page(i18n.FromCtx(ctx).T("LoginPageTitle")) {
 		<main class="flex justify-center px-10 py-16">
 			@LoginForm(r, form)
 		</main>

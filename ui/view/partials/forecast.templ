@@ -3,6 +3,7 @@ package partials
 import (
 	"fmt"
 	"github.com/vekkele/worddy/internal/domain"
+	"github.com/vekkele/worddy/internal/i18n"
 )
 
 templ ReviewForecast(forecast []domain.DayForecast) {
@@ -12,7 +13,9 @@ templ ReviewForecast(forecast []domain.DayForecast) {
 			"md:ml-12 md:max-w-md dark:bg-slate-800",
 		}
 	>
-		<h2 class="text-2xl font-bold">Review Forecast</h2>
+		<h2 class="text-2xl font-bold">
+			@i18n.T("ForecastTitle")
+		</h2>
 		<div class="flex flex-col gap-2">
 			for i, dayForecast := range forecast {
 				@DayForecast(dayForecast, i)
@@ -31,9 +34,9 @@ templ DayForecast(forecast domain.DayForecast, index int) {
 		>
 			<span>
 				if index == 0 {
-					Today
+					@i18n.T("Today")
 				} else {
-					{ forecast.Weekday }
+					{ i18n.FromCtx(ctx).T(forecast.Weekday.String()) }
 				}
 			</span>
 		</h4>

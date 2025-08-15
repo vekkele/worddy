@@ -2,6 +2,7 @@ package partials
 
 import (
 	"github.com/justinas/nosurf"
+	"github.com/vekkele/worddy/internal/i18n"
 	"net/http"
 )
 
@@ -14,8 +15,12 @@ templ Header(r *http.Request, isAuthenticated bool) {
 				<button class="btn">Logout</button>
 			</form>
 		} else {
-			<a href="/user/signup" class="btn">Sign Up</a>
-			<a href="/user/login" class="btn">Login</a>
+			<a href="/user/signup" class="btn">
+				@i18n.T("SignUpButton")
+			</a>
+			<a href="/user/login" class="btn">
+				@i18n.T("LoginButton")
+			</a>
 		}
 	</header>
 }
